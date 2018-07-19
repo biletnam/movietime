@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
+
 import Header from './component/Header';
 import Slider from './component/Slider';
 import NowPlaying from './component/NowPlaying';
 import Footer from './component/Footer';
-import MovieDetails from './component/MovieDetails';
 
 class AppInit extends Component {
   render() {
@@ -13,7 +13,6 @@ class AppInit extends Component {
         <Slider />
         <NowPlaying />
         <Footer />
-        <MovieDetails />
       </div>
     );
   }
