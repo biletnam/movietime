@@ -7,7 +7,6 @@ class MovieDetails extends Component {
   render() {
     return (
       <div className="MovieDetails">
-        <Header />
         <div className="mt-movie">
             <div className="mt-movie-image">
                 <img className="" src={require('../img/nowplaying/bXrZ5iHBEjH7WMidbUDQ0U2xbmr.jpg')} height="500px" alt="" /> 
@@ -115,7 +114,6 @@ class MovieDetails extends Component {
                 <button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button>                
             </div>
         </div>
-        <Footer />
       </div>
     );
   }

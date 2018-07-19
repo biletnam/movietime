@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import '../style/Slider.css';
 
+import { Link } from 'react-router-dom';
+
 class Slider extends Component {
   render() {
     return (
@@ -17,7 +19,7 @@ class Slider extends Component {
                     <div className="carousel-caption d-none d-md-block">
                         <h1>Jumanji: Welcome to The Jungle</h1>
                         <p>Wanna be like them?</p>
-                        <button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button>
+                        <Link to="/jumanji-welcome-to-the-jungle"><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>
                     </div>
                 </div>
                 <div className="carousel-item mt-slider">
