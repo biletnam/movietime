@@ -27,14 +27,14 @@
 }
 
 .mt-slider h1 {
-    color: #ffc107;
+    /* color: #ffc107; */
+    /* letter-spacing: 5px; */
+    text-transform: uppercase;
+    font-weight: bold;
+    font-family: 'Open Sans', sans-serif;
 }
 .mt-text-muted {
     color: #d8d3c5;
     font-size: 35px;
 }
 
-.mt-text-poster {
-    letter-spacing: 5px;
-    text-transform: uppercase;
-}

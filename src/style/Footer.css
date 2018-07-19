@@ -1,0 +1,43 @@
+.footer {
+    height: 200px;
+    width: full;
+    padding: 20px;
+    /* background: #4d6057; */
+    background: #343a40;
+    font-family: 'Roboto', sans-serif;
+    font-size: 12px;
+    color: #c8d1cc;
+}
+
+.footer-column {
+    display: grid;
+    grid-template-columns: 20% 30% 30% 20%;
+    grid-column-gap: 20px;
+}
+
+.box2 {
+    display: grid;
+    grid-template-columns: 30% 30% 30%;
+    grid-column-gap: 10px;
+    padding: 10px;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.stay-connected {
+    font-size: 24px;
+    color: #ffc107;
+}
+
+.follow-us {
+    font-size: 24px;
+}
+
+.brand-color {
+    /* background-color: #42f4a1; */
+    background-color: #ffc107;
+}

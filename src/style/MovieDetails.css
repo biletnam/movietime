@@ -1,0 +1,46 @@
+.mt-movie{
+    margin: 100px 200px 100px 200px;
+    display: grid;
+    grid-template-columns:40% 60%;
+    font-family: 'Roboto', sans-serif;
+}
+
+table {
+    table-layout: auto;
+    width: 500px; 
+}
+
+.mt-schedule {
+    margin: 10px 100px 10px 0px;
+    display: grid;
+    grid-template-columns:45% 10% 45%;
+}
+
+.mt-seats {
+    display: grid;
+    grid-template-columns:10% 10% 10% 10% 10% 10% 10% 10% 10% 10%;
+    margin: 10px;
+    grid-column-gap:20px;
+    grid-row-gap:10px;
+    text-align: center;
+    max-width: 400px;
+}
+
+.mt-seats div {
+    background: lightskyblue;
+    padding: 1px;
+}
+
+.kotak-A {
+    background: none;
+}
+
+.mt-seats-screen {
+    background: yellow;
+    height: 20px;
+    width: 300px;
+}
+
+.mt-summary-booking {
+    
+}
