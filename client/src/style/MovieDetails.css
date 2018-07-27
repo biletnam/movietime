@@ -1,0 +1,57 @@
+.mt-moviedetails-movie{
+    margin: 100px 200px 100px 200px;
+    display: grid;
+    grid-template-columns:40% 60%;
+}
+
+.MOVIEDETAILS table {
+    table-layout: auto;
+    width: 500px; 
+}
+
+.mt-moviedetails-schedule {
+    margin: 10px 100px 10px 0px;
+    display: grid;
+    grid-template-columns:45% 10% 45%;
+}
+
+.mt-moviedetails-seats {
+    display: grid;
+    grid-template-columns:16.7% 16.7% 16.7% 16.7% 16.7% 16.7%;
+    margin: 10px;
+    grid-column-gap:20px;
+    grid-row-gap:10px;
+    text-align: center;
+    max-width: 400px;
+}
+
+.mt-moviedetails-seats div {
+    background: lightskyblue;
+    padding: 1px;
+}
+
+.mt-moviedetails-seats div:nth-child(1) {
+    background: none;
+    padding: 1px;
+}
+
+.mt-moviedetails-seats div:nth-child(7) {
+    background: none;
+    padding: 1px;
+}
+
+.mt-moviedetails-seats div:nth-child(13) {
+    background: none;
+    padding: 1px;
+}
+
+.mt-moviedetails-seats div:nth-child(19) {
+    background: none;
+    padding: 1px;
+}
+
+.mt-moviedetails-seats-screen {
+    background: yellow;
+    height: 20px;
+    width: 300px;
+}

@@ -1,0 +1,12 @@
+.NOWPLAYING {
+    margin: 100px 200px 100px 200px;
+}
+
+.mt-nowplaying-title {
+    margin: 50px;
+}
+
+.NOWPLAYING h1 {
+    font-weight: bold;
+    font-family: 'Open Sans', sans-serif;
+}
