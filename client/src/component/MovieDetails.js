@@ -11,7 +11,8 @@ class MovieDetails extends Component {
         super();
         this.state = {
             day: [],
-            seat: []
+            seat: [],
+            seatBooked: [],
         };
     }
 
@@ -20,6 +21,15 @@ class MovieDetails extends Component {
         .then((ambilData) => {          
           this.setState({
             day: ambilData.data
+          })            
+        })
+    }
+
+    componentDidMount() {
+        axios.get('http://localhost:5001/seat/SC180718001')
+        .then((ambilData) => {          
+          this.setState({
+            seatBooked: ambilData.data
           })            
         })
     }
@@ -108,6 +118,13 @@ class MovieDetails extends Component {
         return <option value="1" key={index}>{day}, {date_time_date} {date_time_month} {date_time_year} pk. {date_time_hour}:0{date_time_minute}</option>        
     })
 
+    const seatBookedHit =this.state.seatBooked.map((item, index)=>{
+        let seatId = item.seat_id;
+        let seatId_potong = seatId.substr(5,2);
+        return <p>{seatId_potong}</p>
+    })
+
+
     return (
       <div className="MOVIEDETAILS">
         <div className="mt-moviedetails-movie">
@@ -120,6 +137,7 @@ class MovieDetails extends Component {
                 <br />
                 <p><strong>Synopsis</strong></p>
                 <p>Dracula, Mavis, Johnny and the rest of the Drac Pack take a vacation on a luxury Monster Cruise Ship, where Dracula falls in love with the ship's captain, Ericka, who's secretly a descendant of Abraham Van Helsing, the notorious monster slayer.</p>
+                { seatBookedHit }
                 <table>
                     <tr>
                         <th>Genndy Tartakovsky</th>
@@ -151,7 +169,7 @@ class MovieDetails extends Component {
                 <div className="mt-moviedetails-seats ">
                     <div className="kotak-A">A</div>
                     <div className="kotak-A1">
-                        <input type='checkbox' onClick={()=>{this.seat('A1');}} />
+                        <input id='A1' value='A1' disabled={true} type='checkbox' onClick={()=>{this.seat('A1');}} />
                         1
                     </div>
                     <div className="kotak-A2">

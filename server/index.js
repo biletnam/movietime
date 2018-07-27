@@ -28,6 +28,15 @@ app.get('/movie/:id', (req, res) => {
     });
 })
 
+app.get('/seat/:id', (req, res) => {
+    let sql = `select * from seat_reserved left join reservation on seat_reserved.reservation_id = reservation.id where screening_id = '${req.params.id}' and active = 1`;
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        console.log(result);
+        res.send(result);
+    });
+})
+
 app.listen(5001, () => {
     console.log(`Listening to port 5001`)
 });
