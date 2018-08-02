@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import '../style/MovieDetails.css'
 
+import Login from './Login'
+
 // Modules
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -57,6 +59,29 @@ class MovieDetails extends Component {
     // To disabled checkbox which booked
     // [seatId_potong2] adalah dynamic key, bisa dilihat di https://stackoverflow.com/questions/46771248/react-setstate-with-dynamic-key
     klik(screening_id){
+        this.setState({
+            uncheckA1: false,
+            uncheckA2: false,
+            uncheckA3: false,
+            uncheckA4: false,
+            uncheckA5: false,
+            uncheckB1: false,
+            uncheckB2: false,
+            uncheckB3: false,
+            uncheckB4: false,
+            uncheckB5: false,
+            uncheckC1: false,
+            uncheckC2: false,
+            uncheckC3: false,
+            uncheckC4: false,
+            uncheckC5: false,
+            uncheckD1: false,
+            uncheckD2: false,
+            uncheckD3: false,
+            uncheckD4: false,
+            uncheckD5: false,
+        })
+
         axios.get(`http://localhost:5001/seat/${screening_id}`)
         .then((ambilData) => {          
             const hehe = ambilData.data.map((item, index)=>{
@@ -323,8 +348,47 @@ class MovieDetails extends Component {
                         </table>
                     </div>
                     <br />
-                    <Link to="/login"><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>                
+                    {/* <Link to="/login"><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>                 */}
+                    {/* Button trigger modal */}
+                    <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#exampleModalCenter">
+                    BUY TICKET
+                    </button>
                 </div>
+            </div>
+
+            {/* Modal */}
+            <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">LOGIN</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Please login to continue</p>
+                    <input type='text' placeholder=' Email' />
+                    <br />
+                    <br />
+                    <input type='email' placeholder=' Password' />
+                    <br />
+                    <br />
+                    <p>Don't have account? Register now</p>
+                    <input type='text' placeholder=' Email' />
+                    <br />
+                    <br />
+                    <input type='email' placeholder=' Password' />
+                    <br />
+                    <br />
+                    <input type='email' placeholder=' Confirm Pasword' />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Proceed</button>
+                </div>
+                </div>
+            </div>
             </div>
         </div>
         );
