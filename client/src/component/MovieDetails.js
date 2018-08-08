@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
 import '../style/MovieDetails.css'
 
-import Login from './Login'
-
 // Modules
-import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 class MovieDetails extends Component {
@@ -34,6 +31,8 @@ class MovieDetails extends Component {
             uncheckD3: false,
             uncheckD4: false,
             uncheckD5: false,
+            // email: 'belum ada',
+            // password: 'belum ada juga'
         };
         this.klik = this.klik.bind(this);
     }
@@ -80,8 +79,10 @@ class MovieDetails extends Component {
             uncheckD3: false,
             uncheckD4: false,
             uncheckD5: false,
+            styleA1: '{background: "grey"}',
         })
 
+        // For uncheck seat that have been booked
         axios.get(`http://localhost:5001/seat/${screening_id}`)
         .then((ambilData) => {          
             const hehe = ambilData.data.map((item, index)=>{
@@ -122,6 +123,32 @@ class MovieDetails extends Component {
         let total = (parseInt(this.state.seat.length) * 40000);
         return total;
     }
+
+    //Function to change state email
+    changeEmail(){
+        this.setState({email:this.refs.email.value});
+    }
+
+    changePassword(){
+        this.setState({password:this.refs.password.value});
+    }
+
+    login(){
+        // console.log(this.state.email)
+        // console.log(this.state.password)
+
+        var url = 'http://localhost:5001/login';
+        axios.post(url, {
+          email: this.state.email,
+          password: this.state.password
+        })
+        .then(function (response) {
+          console.log(response);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      };
 
     render() {
         //Function to show screening schedule in neat view
@@ -179,15 +206,15 @@ class MovieDetails extends Component {
                     break;
             }        
 
-            return <option value={item.id} key={index}>{item.id} {day}, {date_time_date} {date_time_month} {date_time_year} pk. {date_time_hour}:0{date_time_minute}</option>
+            return <option value={item.id} key={index}>{day}, {date_time_date} {date_time_month} {date_time_year} pk. {date_time_hour}:0{date_time_minute}</option>
         })
 
-        //Function to show seat available
-        const seatBookedHit =this.state.seatBooked.map((item, index)=>{
-            let seatId = item.seat_id;
-            let seatId_potong = seatId.substr(5,2);
-            return <p>{seatId_potong}</p>
-        })
+        // //Function to show seat available
+        // const seatBookedHit =this.state.seatBooked.map((item, index)=>{
+        //     let seatId = item.seat_id;
+        //     let seatId_potong = seatId.substr(5,2);
+        //     return <p>{seatId_potong}</p>
+        // })
 
         return (
         <div className="MOVIEDETAILS">
@@ -201,7 +228,7 @@ class MovieDetails extends Component {
                     <br />
                     <p><strong>Synopsis</strong></p>
                     <p>Dracula, Mavis, Johnny and the rest of the Drac Pack take a vacation on a luxury Monster Cruise Ship, where Dracula falls in love with the ship's captain, Ericka, who's secretly a descendant of Abraham Van Helsing, the notorious monster slayer.</p>
-                    { seatBookedHit }
+                    {/* { seatBookedHit } */}
                     <table>
                         <tr>
                             <th>Genndy Tartakovsky</th>
@@ -221,18 +248,18 @@ class MovieDetails extends Component {
                             { screeningDay }
                         </select>
                         <br />
-                        <select className="custom-select">
+                        {/* <select className="custom-select">
                             <option selected>Time</option>
                             <option value="1">13.00</option>
                             <option value="2">15.00</option>
                             <option value="3">17.00</option>
-                        </select>
+                        </select> */}
                     </div>
                     <br />
                     <h2>Choose your seats</h2>
                     <div className="mt-moviedetails-seats ">
                         <div className="kotak-A">A</div>
-                        <div className="kotak-A1">
+                        <div className="kotak-A1" style={this.state.styleA1}>
                             <input type='checkbox' disabled={this.state.uncheckA1} onClick={()=>{this.seat('A1');}} />
                             1
                         </div>
@@ -368,10 +395,10 @@ class MovieDetails extends Component {
                 </div>
                 <div class="modal-body">
                     <p>Please login to continue</p>
-                    <input type='text' placeholder=' Email' />
+                    <input type='text' placeholder=' Email' ref="email" onChange={()=> {this.changeEmail();}} />
                     <br />
                     <br />
-                    <input type='email' placeholder=' Password' />
+                    <input type='email' placeholder=' Password' ref="password" onChange={()=> {this.changePassword();}} />
                     <br />
                     <br />
                     <p>Don't have account? Register now</p>
@@ -385,7 +412,7 @@ class MovieDetails extends Component {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Proceed</button>
+                    <button type="button" class="btn btn-primary" onClick={()=> {this.login();}}>LOGIN</button>
                 </div>
                 </div>
             </div>
