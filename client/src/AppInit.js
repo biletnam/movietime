@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './AppInit.css';
 
 // Modules
-import { Route } from 'react-router-dom';
+import { Route, Router } from 'react-router-dom';
 
 // Components
 import Header from './component/Header';
@@ -20,11 +20,8 @@ class AppInit extends Component {
     return (
       <div className="AppInit">
         <Header />
-        <Route exact path="/" component={Home} />
-        <Route path="/jumanji-welcome-to-the-jungle" component={MovieDetails}/>
-        <Route path="/login" component={Login}/>
-        <Route path="/payment" component={Payment}/>
-        <Route path="/paymentsuccess" component={PaymentSuccess}/>
+            <Route exact path="/" component={Home} />
+            <Route path="/movie/:title/:id" component={MovieDetails}/>        
         <Footer />
       </div>
     );

@@ -21,7 +21,7 @@
   position: relative;
   background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0, #000000 100%);
   margin-top: -150px;
-  height: 130px;
+  height: 135px;
   width: 100%;
   content: '';
 }

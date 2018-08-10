@@ -8,10 +8,9 @@ class MovieDetails extends Component {
     constructor() {
         super();
         this.state = {
-            day: [], // state to store available screening schedule from database
+            screeningSchedule: [], // state to store available screening schedule from database
             seat: [], // state to store selected seats by user
-            seatBooked: [], // state to store booked seats 
-            uncheckA1: false,
+            uncheckA1: false, // state to uncheck the booked seat
             uncheckA2: false,
             uncheckA3: false,
             uncheckA4: false,
@@ -31,33 +30,28 @@ class MovieDetails extends Component {
             uncheckD3: false,
             uncheckD4: false,
             uncheckD5: false,
-            // email: 'belum ada',
-            // password: 'belum ada juga'
+            email: '',
+            password: '',
+            emailregister: '',
+            passwordregister: '',
+            passwordregisterconfirm: '',
         };
         this.klik = this.klik.bind(this);
-    }
+    };
 
+    //Get screening schedule
     componentDidMount() {
-        //API to get screening schedule
         axios.get('http://localhost:5001/movie/MV001')
         .then((takeData) => {          
           this.setState({
-            day: takeData.data
+            screeningSchedule: takeData.data
           })            
         })
-        
-        //API to get available seats
-        axios.get('http://localhost:5001/seat/SC180718001')
-        .then((ambilData) => {          
-          this.setState({
-            seatBooked: ambilData.data
-          })            
-        })
-    }
+    };
 
     // To disabled checkbox which booked
-    // [seatId_potong2] adalah dynamic key, bisa dilihat di https://stackoverflow.com/questions/46771248/react-setstate-with-dynamic-key
     klik(screening_id){
+        // To get all the checkbox available to check again when user change schedule + erase post action
         this.setState({
             uncheckA1: false,
             uncheckA2: false,
@@ -79,10 +73,9 @@ class MovieDetails extends Component {
             uncheckD3: false,
             uncheckD4: false,
             uncheckD5: false,
-            styleA1: '{background: "grey"}',
         })
 
-        // For uncheck seat that have been booked
+        // For uncheck seat that have been booked (change the state)
         axios.get(`http://localhost:5001/seat/${screening_id}`)
         .then((ambilData) => {          
             const hehe = ambilData.data.map((item, index)=>{
@@ -90,11 +83,11 @@ class MovieDetails extends Component {
                 let seatId_potong = seatId.substr(5,2);
                 let seatId_potong2 = `uncheck${seatId_potong}`
                 this.setState({
-                    [seatId_potong2]: true,
+                    [seatId_potong2]: true, // [seatId_potong2] adalah dynamic key, bisa dilihat di https://stackoverflow.com/questions/46771248/react-setstate-with-dynamic-key
                 })
             })   
         })  
-    }
+    };
 
     //Function to add & remove seat selected to/from state
     seat(choice){
@@ -116,23 +109,26 @@ class MovieDetails extends Component {
                 seat: this.state.seat.concat(choice)
             })
         }
-    }
+    };
     
     //Function to calculate total price
     totalPrice(){
         let total = (parseInt(this.state.seat.length) * 40000);
         return total;
-    }
+    };
 
-    //Function to change state email
+    //**--- LOGIN --- **\\
+    //LOGIN - Function to change state email
     changeEmail(){
         this.setState({email:this.refs.email.value});
-    }
+    };
 
+    // LOGIN - Function to change state password
     changePassword(){
         this.setState({password:this.refs.password.value});
-    }
+    };
 
+    // LOGIN - Authentticate the user
     login(){
         // console.log(this.state.email)
         // console.log(this.state.password)
@@ -148,11 +144,65 @@ class MovieDetails extends Component {
         .catch(function (error) {
           console.log(error);
         });
-      };
+    };
+
+    //**--- REGISTER --- **\\
+    // REGISTER - Function to change state email
+    registerEmail(){
+        this.setState({emailregister:this.refs.emailregister.value});
+    };
+
+    // REGISTER - Function to change state password
+    registerPassword(){
+        this.setState({passwordregister:this.refs.passwordregister.value});
+    };
+
+    // REGISTER - Function to change state password confirm
+    registerPasswordConfirm(){
+        this.setState({passwordregisterconfirm:this.refs.passwordregisterconfirm.value});
+    };
+
+    // REGISTER - Insert user email and password to database    
+    register(){
+        // console.log(this.state.email)
+        // console.log(this.state.password)
+
+        var url = 'http://localhost:5001/register';
+        axios.post(url, {
+          email: this.state.emailregister,
+          password: this.state.passwordregister,
+          passwordConfirm: this.state.passwordregisterconfirm
+        })
+        .then((response) => {
+          console.log(response);
+          if (response.data.kode == '001'){
+            this.createReservation();
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+
+    // Function to create transaction
+    createReservation() {
+        var url = 'http://localhost:5001/createreservation';
+        axios.post(url, {
+            email: this.state.email,
+            password: this.state.password,
+            seat: this.state.seat,
+        })
+        .then(function (response) {
+            console.log(response);
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
 
     render() {
-        //Function to show screening schedule in neat view
-        const screeningDay =this.state.day.map((item, index)=>{
+        //Show screening schedule in neat view
+        const screeningDay =this.state.screeningSchedule.map((item, index)=>{
 
             let day = item.day;
             let date_time_raw = item.date_time;
@@ -209,13 +259,6 @@ class MovieDetails extends Component {
             return <option value={item.id} key={index}>{day}, {date_time_date} {date_time_month} {date_time_year} pk. {date_time_hour}:0{date_time_minute}</option>
         })
 
-        // //Function to show seat available
-        // const seatBookedHit =this.state.seatBooked.map((item, index)=>{
-        //     let seatId = item.seat_id;
-        //     let seatId_potong = seatId.substr(5,2);
-        //     return <p>{seatId_potong}</p>
-        // })
-
         return (
         <div className="MOVIEDETAILS">
             <div className="mt-moviedetails-movie">
@@ -227,8 +270,7 @@ class MovieDetails extends Component {
                     <h1>Jumanji: Welcome to The Jungle</h1>
                     <br />
                     <p><strong>Synopsis</strong></p>
-                    <p>Dracula, Mavis, Johnny and the rest of the Drac Pack take a vacation on a luxury Monster Cruise Ship, where Dracula falls in love with the ship's captain, Ericka, who's secretly a descendant of Abraham Van Helsing, the notorious monster slayer.</p>
-                    {/* { seatBookedHit } */}
+                    <p>{this.props.match.params.id}Dracula, Mavis, Johnny and the rest of the Drac Pack take a vacation on a luxury Monster Cruise Ship, where Dracula falls in love with the ship's captain, Ericka, who's secretly a descendant of Abraham Van Helsing, the notorious monster slayer.</p>
                     <table>
                         <tr>
                             <th>Genndy Tartakovsky</th>
@@ -248,18 +290,12 @@ class MovieDetails extends Component {
                             { screeningDay }
                         </select>
                         <br />
-                        {/* <select className="custom-select">
-                            <option selected>Time</option>
-                            <option value="1">13.00</option>
-                            <option value="2">15.00</option>
-                            <option value="3">17.00</option>
-                        </select> */}
                     </div>
                     <br />
                     <h2>Choose your seats</h2>
                     <div className="mt-moviedetails-seats ">
                         <div className="kotak-A">A</div>
-                        <div className="kotak-A1" style={this.state.styleA1}>
+                        <div className="kotak-A1">
                             <input type='checkbox' disabled={this.state.uncheckA1} onClick={()=>{this.seat('A1');}} />
                             1
                         </div>
@@ -399,20 +435,25 @@ class MovieDetails extends Component {
                     <br />
                     <br />
                     <input type='email' placeholder=' Password' ref="password" onChange={()=> {this.changePassword();}} />
+                    <br/>
+                    <br/>
+                    <button type="button" class="btn btn-primary" onClick={()=> {this.login();}}>LOGIN</button>
                     <br />
                     <br />
                     <p>Don't have account? Register now</p>
-                    <input type='text' placeholder=' Email' />
+                    <input type='text' placeholder=' Email' ref="emailregister" onChange={()=> {this.registerEmail();}} />
                     <br />
                     <br />
-                    <input type='email' placeholder=' Password' />
+                    <input type='email' placeholder=' Password' ref="passwordregister" onChange={()=> {this.registerPassword();}} />
                     <br />
                     <br />
-                    <input type='email' placeholder=' Confirm Pasword' />
+                    <input type='email' placeholder=' Confirm Pasword' ref="passwordregisterconfirm" onChange={()=> {this.registerPasswordConfirm();}}/>
+                    <br/>
+                    <br/>
+                    <button type="button" class="btn btn-primary" onClick={()=> {this.register();}}>SIGN UP</button>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onClick={()=> {this.login();}}>LOGIN</button>
                 </div>
                 </div>
             </div>

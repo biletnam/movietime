@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 
+const axios = require('axios');
+
 const cors = require('cors');
 app.use(cors());
 
@@ -24,7 +26,7 @@ app.get('/movie/:id', (req, res) => {
     let sql = `select * from  movie inner join screening on movie.id = screening.movie_id where movie_id = '${req.params.id}'`;
     db.query(sql, (err, result) => {
         if (err) throw err;
-        // console.log(result);
+        console.log(result);
         res.send(result);
     });
 })
@@ -33,45 +35,19 @@ app.get('/seat/:id', (req, res) => {
     let sql = `select * from seat_reserved left join reservation on seat_reserved.reservation_id = reservation.id where screening_id = '${req.params.id}' and active = 1`;
     db.query(sql, (err, result) => {
         if (err) throw err;
-        // console.log(result);
+        console.log(result);
         res.send(result);
     });
 })
 
-app.post('/login', function(req, res, next) {
+app.post('/login', (req, res, next) => {
   passport.authenticate('local', function(err, user, info) {
     console.log("Infooo:", info)
     console.log("User:", user)
-    res.send({
-        status: 'Berhasil'
-    })
-  })(req, res, next);
-    
-    // If this function gets called, authentication was successful.
-    // `req.user` contains the authenticated user.
-    // let sql =  `select count(*) from user where email = '${req.body.email}' and password = '${req.body.password}'`
-    // db.query(sql, (err, result) => {
-        
-    //     if (err) throw err;
+    res.send(user)
+  }) (req, res, next);
+});
 
-    //     if (result == 1){
-    //         res.send({
-    //             status: 'Berhasil'
-    //         })
-    //         console.log(`Berhasil`)
-
-    //     } else {
-    //         res.send({
-    //             status: 'Gagal'
-    //         })
-    //         console.log(`Gagal`)
-
-    //     }
-                        
-    //     console.log(result)
-    // })
-    // res.redirect('/');
-  });
 
 passport.use(new LocalStrategy ({
     usernameField: 'email',
@@ -86,52 +62,15 @@ passport.use(new LocalStrategy ({
         
         if (err) throw err;
 
-        console.log(result)
-        console.log(typeof(result))
-        console.log(result.RowDataPacket)
-
         if (result[0].hitung == 1){
-            // res.send({
-            //     status: 'Berhasil'
-            // })
             console.log(`Berhasil`)
             return done(null, { message: 'Berhasil' });
 
         } else {
-            // res.send({
-            //     status: 'Gagal'
-            // })
             console.log(`Gagal`)
             return done(null, false, { message: 'Incorrect username or password.' });
-
-
-        }
-                        
-    })
-
-        // let sql =  `select count(*) from user where email = '${email}' and password = '${password}'`
-        
-        // db.query(sql, (err, result) => {
-
-        //     if (err) { return done(err); }
-
-        //     if (result == 1){
-        //         res.send({
-        //             status: 'Berhasil'
-        //         })
-        //         console.log(`Berhasil`)
-
-        //     } else {
-        //         res.send({
-        //             status: 'Gagal'
-        //         })
-        //         console.log(`Gagal`)
-
-        //     }
-            
-        //     if (err) throw err;
-        //     console.log(result)
-        // })  
+        }                      
+        })
     }
 ))
 
@@ -140,6 +79,23 @@ app.post('/login',
                                    failureRedirect: '/',
                                    failureFlash: true })
 );
+
+app.post('/register', (req, res) => {
+    // console.log(req.body)
+    let sql = 'INSERT INTO user SET ?';
+    let data = {email: req.body.email, password: req.body.password, passwordConfirm: req.body.passwordConfirm}
+    db.query(sql, data, (err, result) => {
+        if(err) throw err;
+        console.log(result);
+        res.send({
+            kode: '001',
+            status: 'Berhasil',
+		    email: req.body.nama,
+	});
+    })
+})
+
+
 
 app.listen(5001, () => {
     console.log(`Listening to port 5001`)

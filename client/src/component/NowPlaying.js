@@ -17,7 +17,7 @@ class NowPlaying extends Component {
                 <div className="card-body">
                     <h5 className="card-title">Jumanji: Welcome to The Jungle</h5>
                     <p className="card-text"><small className="text-muted">Last updated 3 mins ago</small></p>                
-                    <Link to="/jumanji-welcome-to-the-jungle"><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>                
+                    <Link to="/movie/jumanji-welcome-to-the-jungle/mv001"><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>                
                 </div>
             </div>
             <div className="card">
@@ -25,7 +25,7 @@ class NowPlaying extends Component {
                 <div className="card-body">
                     <h5 className="card-title">Hotel Transylvania: Summer Vacation</h5>
                     <p className="card-text"><small className="text-muted">Last updated 3 mins ago</small></p>
-                    <button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button>                
+                    <Link to="/movie/hotel-transylvania-3-welcome-to-the-jungle/mv002"><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>                
                 </div>
             </div>
             <div className="card">
@@ -34,7 +34,7 @@ class NowPlaying extends Component {
                     <h5 className="card-title">Ocean's 8</h5>
                     <br />
                     <p className="card-text"><small className="text-muted">Last updated 3 mins ago</small></p>                
-                    <button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button>                
+                    <Link to="/movie/oceans-8/mv003"><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>          
                 </div>
             </div>
         </div>

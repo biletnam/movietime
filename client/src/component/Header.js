@@ -9,8 +9,8 @@
 //             <img src={require('../img/movietimecom-transparent-crop.png')} alt="" height="50px"/>
 //             <span className="mt-header-navbar-space"></span>
             
-//             {/* <a class="navbar-brand mt-header-font" href="#">The Easiest Way to Buy Theater Ticket!</a>             */}
-//             <p class="mt-header-font">The Easiest Way to Buy Theater Ticket!</p>            
+//             {/* <a className="navbar-brand mt-header-font" href="#">The Easiest Way to Buy Theater Ticket!</a>             */}
+//             <p className="mt-header-font">The Easiest Way to Buy Theater Ticket!</p>            
             
 //             <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 //                 <span className="navbar-toggler-icon"></span>
@@ -51,41 +51,37 @@ class Header extends Component {
         super();
         this.state = {
             dynamic_Class: 'navbar navbar-expand-md fixed-top',
-            dynamic_height: '60px'
+            dynamic_height: '60px',
+            logo: require('../img/movietimecom-transparent-crop.png'),
         }
     }
 
     componentDidMount() {
         document.addEventListener('scroll', () => {
-            if (window.scrollY > 600) {
+            if (window.scrollY > 50) {
                 this.setState({
                     dynamic_Class: 'navbar navbar-expand-md fixed-top shrink',
-                    dynamic_height: '40px'
+                    dynamic_height: '25px',
+                    logo: require('../img/movietimecom-transparent-crop-vertical.png'),
                 })
             }
-            else if (window.scrollY < 600) {
+            else if (window.scrollY < 50) {
                 this.setState({
                     dynamic_Class: 'navbar navbar-expand-md fixed-top',
-                    dynamic_height: '60px'
-
+                    dynamic_height: '80px',
+                    logo: require('../img/movietimecom-transparent-crop.png'),
                 })
             }
-            
         });
     }
   render() {
     return (
       <div className="HEADER">
-            <nav class={this.state.dynamic_Class} id="banner">
-                <div class="container">
-                    {/* <!-- Brand --> */}
-                    <a class="navbar-brand" href="#"><img src={require('../img/movietimecom-transparent-crop.png')} alt="" height={this.state.dynamic_height}/></a>
-                    
-                    {/* <!-- Toggler/collapsibe Button --> */}
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
+            <nav className={this.state.dynamic_Class} id="banner">
+                <div className="container">
+                    <a className="navbar-brand" href="#"><img src={this.state.logo} alt="" height={this.state.dynamic_height}/></a>
 
+                    <button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">SIGN IN</button>
                 </div>
             </nav>
       </div>

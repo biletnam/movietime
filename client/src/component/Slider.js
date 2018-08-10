@@ -19,7 +19,7 @@ class Slider extends Component {
                     <div className="carousel-caption d-none d-md-block">
                         <h1>Jumanji: Welcome to The Jungle</h1>
                         <p>Wanna be like them?</p>
-                        <Link to="/jumanji-welcome-to-the-jungle"><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>
+                        <Link to="/movie/jumanji-welcome-to-the-jungle/mv001"><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>
                     </div>
                 </div>
                 <div className="carousel-item mt-slider">
@@ -27,7 +27,7 @@ class Slider extends Component {
                     <div className="carousel-caption d-none d-md-block">
                         <h1>Hotel Transylvania 3: Summer Vacation</h1>
                         <p>The monster vacay continues! Got tix?</p>
-                        <button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button>
+                        <Link to="/movie/hotel-transylvania-3-welcome-to-the-jungle/mv002"><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>
                     </div>
                 </div>
                 <div className="carousel-item mt-slider">
@@ -36,7 +36,7 @@ class Slider extends Component {
                         <div>
                             <h1>Ocean's 8</h1>
                             <p>Girls power is back! Got tix?</p>
-                            <button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button>
+                            <Link to="/movie/oceans-8/mv003"><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>
                         </div>
                     </div>
                 </div>
