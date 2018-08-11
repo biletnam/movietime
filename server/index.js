@@ -1,8 +1,6 @@
 const express = require('express');
 const app = express();
 
-const axios = require('axios');
-
 const cors = require('cors');
 app.use(cors());
 
@@ -64,7 +62,7 @@ passport.use(new LocalStrategy ({
 
         if (result[0].hitung == 1){
             console.log(`Berhasil`)
-            return done(null, { message: 'Berhasil' });
+            return done(null, { kode: '001' });
 
         } else {
             console.log(`Gagal`)
@@ -90,12 +88,27 @@ app.post('/register', (req, res) => {
         res.send({
             kode: '001',
             status: 'Berhasil',
-		    email: req.body.nama,
+		    email: req.body.email,
 	});
     })
 })
 
+app.post('/createreservation', (req, res) => {
+    var sql1 = `insert into reservation values ( null, now(), '${req.body.screening}', (select id from user where email = '${req.body.email}' and password = '${req.body.password}'),0)`
+    db.query(sql1, (err, result) => {
+        if (err) throw err;
 
+        for (let i=0; i<req.body.seat.length; i++){
+            var seat_id = `${req.body.theater}${req.body.seat[i]}`
+            var sql3 = `insert into seat_reserved values (null, '${seat_id}', ${result.insertId})`
+            console.log(sql3)
+            db.query(sql3, (err, result) => {
+                if (err) throw err;
+                console.log(result);
+            })
+        }
+    })
+})
 
 app.listen(5001, () => {
     console.log(`Listening to port 5001`)

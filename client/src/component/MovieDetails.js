@@ -8,7 +8,10 @@ class MovieDetails extends Component {
     constructor() {
         super();
         this.state = {
+            movieSelected: '', // state to store movie selected
             screeningSchedule: [], // state to store available screening schedule from database
+            screeningSelected: '', // state to store screening selected
+            theater: '',
             seat: [], // state to store selected seats by user
             uncheckA1: false, // state to uncheck the booked seat
             uncheckA2: false,
@@ -39,14 +42,23 @@ class MovieDetails extends Component {
         this.klik = this.klik.bind(this);
     };
 
+    //Get movie id
+    componentWillMount() {
+        this.setState({
+            movieSelected: this.props.match.params.id
+        })
+    }
+
     //Get screening schedule
     componentDidMount() {
-        axios.get('http://localhost:5001/movie/MV001')
+        axios.get(`http://localhost:5001/movie/${this.state.movieSelected}`)
         .then((takeData) => {          
           this.setState({
-            screeningSchedule: takeData.data
+            screeningSchedule: takeData.data,
           })            
         })
+        
+        window.scrollTo(0, 0)        
     };
 
     // To disabled checkbox which booked
@@ -73,11 +85,12 @@ class MovieDetails extends Component {
             uncheckD3: false,
             uncheckD4: false,
             uncheckD5: false,
+            screeningSelected: screening_id,
         })
 
-        // For uncheck seat that have been booked (change the state)
         axios.get(`http://localhost:5001/seat/${screening_id}`)
-        .then((ambilData) => {          
+        .then((ambilData) => {
+            // For uncheck seat that have been booked (change the state)
             const hehe = ambilData.data.map((item, index)=>{
                 let seatId = item.seat_id;
                 let seatId_potong = seatId.substr(5,2);
@@ -85,7 +98,14 @@ class MovieDetails extends Component {
                 this.setState({
                     [seatId_potong2]: true, // [seatId_potong2] adalah dynamic key, bisa dilihat di https://stackoverflow.com/questions/46771248/react-setstate-with-dynamic-key
                 })
-            })   
+            })
+            
+            // For take theater
+            let ambilTheater = (ambilData.data[0].seat_id).substr(0,5) 
+            console.log(ambilTheater)
+            this.setState({
+                theater: ambilTheater,
+            })
         })  
     };
 
@@ -118,64 +138,76 @@ class MovieDetails extends Component {
     };
 
     //**--- LOGIN --- **\\
-    //LOGIN - Function to change state email
-    changeEmail(){
-        this.setState({email:this.refs.email.value});
-    };
+    // //LOGIN - Function to change state email
+    // changeEmail(){
+    //     this.setState({email:this.refs.email.value});
+    // };
 
-    // LOGIN - Function to change state password
-    changePassword(){
-        this.setState({password:this.refs.password.value});
-    };
+    // // LOGIN - Function to change state password
+    // changePassword(){
+    //     this.setState({password:this.refs.password.value});
+    // };
 
     // LOGIN - Authentticate the user
     login(){
         // console.log(this.state.email)
         // console.log(this.state.password)
 
+        // var url = 'http://localhost:5001/login';
+        // axios.post(url, {
+        //   email: this.state.email,
+        //   password: this.state.password
+        // })
+        // .then(function (response) {
+        //   console.log(response);
+        // })
+        // .catch(function (error) {
+        //   console.log(error);
+        // });
+
         var url = 'http://localhost:5001/login';
         axios.post(url, {
-          email: this.state.email,
-          password: this.state.password
+          email: this.refs.emaillogin.value,
+          password: this.refs.passwordlogin.value
         })
-        .then(function (response) {
+        .then((response) => {
           console.log(response);
+        //   console.log(response.data.kode)
+          if (response.data.kode == '001'){
+            this.setState({
+                email:this.refs.emaillogin.value,
+                password:this.refs.passwordlogin.value,
+            });
+            console.log(`Ini setelah berahasil register ${this.state.email}`)
+            this.createReservation();
+          }
         })
         .catch(function (error) {
           console.log(error);
         });
+
     };
 
     //**--- REGISTER --- **\\
-    // REGISTER - Function to change state email
-    registerEmail(){
-        this.setState({emailregister:this.refs.emailregister.value});
-    };
-
-    // REGISTER - Function to change state password
-    registerPassword(){
-        this.setState({passwordregister:this.refs.passwordregister.value});
-    };
-
-    // REGISTER - Function to change state password confirm
-    registerPasswordConfirm(){
-        this.setState({passwordregisterconfirm:this.refs.passwordregisterconfirm.value});
-    };
-
-    // REGISTER - Insert user email and password to database    
     register(){
         // console.log(this.state.email)
         // console.log(this.state.password)
 
         var url = 'http://localhost:5001/register';
         axios.post(url, {
-          email: this.state.emailregister,
-          password: this.state.passwordregister,
-          passwordConfirm: this.state.passwordregisterconfirm
+          email: this.refs.emailregister.value,
+          password: this.refs.passwordregister.value,
+          passwordConfirm: this.refs.passwordregisterconfirm.value
         })
         .then((response) => {
           console.log(response);
           if (response.data.kode == '001'){
+            this.setState({
+                email:this.refs.emailregister.value,
+                password:this.refs.passwordregister.value,
+                passwordconfirm:this.refs.passwordregisterconfirm.value
+            });
+            console.log(`Ini setelah berahasil register ${this.state.email}`)
             this.createReservation();
           }
         })
@@ -186,10 +218,14 @@ class MovieDetails extends Component {
 
     // Function to create transaction
     createReservation() {
+        console.log(`Ini di create reservation ${this.state.email}`)
+
         var url = 'http://localhost:5001/createreservation';
         axios.post(url, {
             email: this.state.email,
             password: this.state.password,
+            screening: this.state.screeningSelected,
+            theater: this.state.theater,
             seat: this.state.seat,
         })
         .then(function (response) {
@@ -270,7 +306,7 @@ class MovieDetails extends Component {
                     <h1>Jumanji: Welcome to The Jungle</h1>
                     <br />
                     <p><strong>Synopsis</strong></p>
-                    <p>{this.props.match.params.id}Dracula, Mavis, Johnny and the rest of the Drac Pack take a vacation on a luxury Monster Cruise Ship, where Dracula falls in love with the ship's captain, Ericka, who's secretly a descendant of Abraham Van Helsing, the notorious monster slayer.</p>
+                    <p>Dracula, Mavis, Johnny and the rest of the Drac Pack take a vacation on a luxury Monster Cruise Ship, where Dracula falls in love with the ship's captain, Ericka, who's secretly a descendant of Abraham Van Helsing, the notorious monster slayer.</p>
                     <table>
                         <tr>
                             <th>Genndy Tartakovsky</th>
@@ -431,23 +467,23 @@ class MovieDetails extends Component {
                 </div>
                 <div class="modal-body">
                     <p>Please login to continue</p>
-                    <input type='text' placeholder=' Email' ref="email" onChange={()=> {this.changeEmail();}} />
+                    <input type='text' placeholder=' Email' ref="emaillogin" />
                     <br />
                     <br />
-                    <input type='email' placeholder=' Password' ref="password" onChange={()=> {this.changePassword();}} />
+                    <input type='email' placeholder=' Password' ref="passwordlogin" />
                     <br/>
                     <br/>
                     <button type="button" class="btn btn-primary" onClick={()=> {this.login();}}>LOGIN</button>
                     <br />
                     <br />
                     <p>Don't have account? Register now</p>
-                    <input type='text' placeholder=' Email' ref="emailregister" onChange={()=> {this.registerEmail();}} />
+                    <input type='text' placeholder=' Email' ref="emailregister" />
                     <br />
                     <br />
-                    <input type='email' placeholder=' Password' ref="passwordregister" onChange={()=> {this.registerPassword();}} />
+                    <input type='email' placeholder=' Password' ref="passwordregister" />
                     <br />
                     <br />
-                    <input type='email' placeholder=' Confirm Pasword' ref="passwordregisterconfirm" onChange={()=> {this.registerPasswordConfirm();}}/>
+                    <input type='email' placeholder=' Confirm Pasword' ref="passwordregisterconfirm" />
                     <br/>
                     <br/>
                     <button type="button" class="btn btn-primary" onClick={()=> {this.register();}}>SIGN UP</button>

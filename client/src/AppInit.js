@@ -11,17 +11,14 @@ import Footer from './component/Footer';
 
 // Component for Routes
 import MovieDetails from './component/MovieDetails';
-import Login from './component/Login';
-import Payment from './component/Payment';
-import PaymentSuccess from './component/PaymentSuccess';
 
 class AppInit extends Component {
   render() {
     return (
       <div className="AppInit">
         <Header />
-            <Route exact path="/" component={Home} />
-            <Route path="/movie/:title/:id" component={MovieDetails}/>        
+        <Route exact path="/" component={Home} />
+        <Route path="/movie/:title/:id" component={MovieDetails} />        
         <Footer />
       </div>
     );
