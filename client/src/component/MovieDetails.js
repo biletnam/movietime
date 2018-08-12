@@ -8,6 +8,11 @@ class MovieDetails extends Component {
     constructor() {
         super();
         this.state = {
+            movie: '',
+            moviePoster: '',
+            movieTitle: '',
+            movieOverview: '',
+
             movieSelected: '', // state to store movie selected
             screeningSchedule: [], // state to store available screening schedule from database
             screeningSelected: '', // state to store screening selected
@@ -49,8 +54,22 @@ class MovieDetails extends Component {
         })
     }
 
-    //Get screening schedule
     componentDidMount() {
+        axios.get(`https://api.themoviedb.org/3/movie/${this.state.movieSelected}/images?api_key=5c494406a56ba5a1cce62329a3880c81&language=en-US&include_image_language=en%2Cnull`)
+        .then((ambilData) => {
+            this.setState({
+                moviePoster: `https://image.tmdb.org/t/p/original${ambilData.data.posters[0].file_path}`,
+            })
+        })
+        axios.get(`https://api.themoviedb.org/3/movie/${this.state.movieSelected}?api_key=5c494406a56ba5a1cce62329a3880c81&language=en-US`)
+        .then((ambilData) => {
+            this.setState({
+                movieTitle: ambilData.data.original_title,
+                movieOverview: ambilData.data.overview,
+            })
+        })
+
+        //Get screening schedule
         axios.get(`http://localhost:5001/movie/${this.state.movieSelected}`)
         .then((takeData) => {          
           this.setState({
@@ -299,15 +318,15 @@ class MovieDetails extends Component {
         <div className="MOVIEDETAILS">
             <div className="mt-moviedetails-movie">
                 <div className="mt-moviedetails-movie-image">
-                    <img className="" src={require('../img/nowplaying/bXrZ5iHBEjH7WMidbUDQ0U2xbmr.jpg')} height="500px" alt="" /> 
+                    <img className="" src={this.state.moviePoster} height="500px" alt="" /> 
                 </div>
 
                 <div className="mt-moviedetails-movie-description">
-                    <h1>Jumanji: Welcome to The Jungle</h1>
+                    <h1>{this.state.movieTitle}</h1>
                     <br />
                     <p><strong>Synopsis</strong></p>
-                    <p>Dracula, Mavis, Johnny and the rest of the Drac Pack take a vacation on a luxury Monster Cruise Ship, where Dracula falls in love with the ship's captain, Ericka, who's secretly a descendant of Abraham Van Helsing, the notorious monster slayer.</p>
-                    <table>
+                    <p>{this.state.movieOverview}</p>
+                    {/* <table>
                         <tr>
                             <th>Genndy Tartakovsky</th>
                             <th>Michael McCullers</th>
@@ -318,7 +337,7 @@ class MovieDetails extends Component {
                         </tr>
                     </table>
                     <br />
-                    <br />
+                    <br /> */}
                     <h2>Choose your schedule</h2>
                     <div className="mt-moviedetails-schedule">
                         <select  onChange={(e) => this.klik(e.target.value)} className="custom-select">

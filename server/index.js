@@ -21,7 +21,8 @@ const db = mysql.createConnection({
 db.connect();
 
 app.get('/movie/:id', (req, res) => {
-    let sql = `select * from  movie inner join screening on movie.id = screening.movie_id where movie_id = '${req.params.id}'`;
+    let sql = `select * from  movie inner join screening on movie.id = screening.movie_id where movie_id = (select id from movie where moviedb_id = ${req.params.id})`;
+
     db.query(sql, (err, result) => {
         if (err) throw err;
         console.log(result);

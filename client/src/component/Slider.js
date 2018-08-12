@@ -1,33 +1,34 @@
 import React, { Component } from 'react';
 import '../style/Slider.css';
 
-import { Link } from 'react-router-dom';
-
 import axios from 'axios'
+import { Link, withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 class Slider extends Component {
-    constructor(){
-        super();
-        this.state = {
-            movie1: '299536',
-            movie2: '353486',
-            movie3: '402900',
-            movieSlider1: '',
-            movieSlider2: '',
-            movieSlider3: '',
-            movieTitle1: '',
-            movieTitle2: '',
-            movieTitle3: '',
-        }
+    state = {
+        movie1: '299536',
+        movie2: '353486',
+        movie3: '402900',
+        movieSlider1: '',
+        movieSlider2: '',
+        movieSlider3: '',
+        movieTitle1: '',
+        movieTitle2: '',
+        movieTitle3: '',
     }
-    componentWillMount(){
+
+    componentDidMount() {
+        { this.createCarousel() }
+    }
+
+    createCarousel() {
         axios.get(`https://api.themoviedb.org/3/movie/${this.state.movie1}/images?api_key=5c494406a56ba5a1cce62329a3880c81&language=en-US&include_image_language=en%2Cnull`)
         .then((ambilData) => {
             this.setState({
                 movieSlider1: `https://image.tmdb.org/t/p/original${ambilData.data.backdrops[0].file_path}`,
             })
         })
-
         axios.get(`https://api.themoviedb.org/3/movie/${this.state.movie1}?api_key=5c494406a56ba5a1cce62329a3880c81&language=en-US`)
         .then((ambilData) => {
             this.setState({
@@ -65,7 +66,7 @@ class Slider extends Component {
                 movieTagline3: ambilData.data.tagline,
             })
         })
-    }
+  }
 
   render() {
     return (
@@ -80,9 +81,9 @@ class Slider extends Component {
                 <div className="carousel-item active mt-slider">
                     <img className="d-block w-100 mt-slider-crop" src={this.state.movieSlider1} alt="Third slide"/>
                     <div className="carousel-caption d-none d-md-block">
-                        <h1>{this.state.movieTitle1}</h1>
+                        <h1>{this.state.movieTitle1}{this.props.movie1}</h1>
                         <p>{this.state.movieTagline1}</p>
-                        <Link to="/movie/jumanji-welcome-to-the-jungle/mv001"><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>
+                        <Link to={this.state.movie1}><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>
                     </div>
                 </div>
                 <div className="carousel-item mt-slider">
@@ -90,7 +91,7 @@ class Slider extends Component {
                     <div className="carousel-caption d-none d-md-block">
                         <h1>{this.state.movieTitle2}</h1>
                         <p>{this.state.movieTagline2}</p>
-                        <Link to="/movie/hotel-transylvania-3-welcome-to-the-jungle/mv002"><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>
+                        <Link to={this.state.movie2}><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>
                     </div>
                 </div>
                 <div className="carousel-item mt-slider">
@@ -99,7 +100,7 @@ class Slider extends Component {
                         <div>
                             <h1>{this.state.movieTitle3}</h1>
                             <p>{this.state.movieTagline3}</p>
-                            <Link to="/movie/oceans-8/mv003"><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>
+                            <Link to={this.state.movie3}><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>
                         </div>
                     </div>
                 </div>
@@ -119,4 +120,13 @@ class Slider extends Component {
   }
 }
 
-export default Slider;
+const mapStateToProps = (state) => {
+    const movie1 = state.movie1;
+    const movie2 = state.movie2;
+    const movie3 = state.movie3;
+    return { movie1, movie2, movie3 };
+}
+  
+export default withRouter(
+    connect(mapStateToProps)(Slider)
+);
