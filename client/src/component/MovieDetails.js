@@ -1,13 +1,17 @@
 import React, { Component } from 'react';
+import Cookies from 'universal-cookie';
 import '../style/MovieDetails.css'
 
 // Modules
 import axios from 'axios';
 
+const cookies = new Cookies();
+
 class MovieDetails extends Component {
     constructor() {
         super();
         this.state = {
+            cookie: '',
             movie: '',
             moviePoster: '',
             movieTitle: '',
@@ -18,6 +22,7 @@ class MovieDetails extends Component {
             screeningSelected: '', // state to store screening selected
             theater: '',
             seat: [], // state to store selected seats by user
+
             uncheckA1: false, // state to uncheck the booked seat
             uncheckA2: false,
             uncheckA3: false,
@@ -52,9 +57,38 @@ class MovieDetails extends Component {
         this.setState({
             movieSelected: this.props.match.params.id
         })
+
+        //Check cookies
+        let cookiePeramban = cookies.get('MOVIETIME_SESSID')
+        console.log(cookiePeramban)
+        
+        var url = 'http://localhost:5001/cookie';
+        axios.post(url, {
+            cookieMovietime: cookiePeramban,
+        })
+        .then((response) => {
+            console.log(response);
+            console.log(response.data.kode)
+            if (response.data.kode == '001'){
+                this.setState({
+                    cookie: true,
+                })
+            }
+            else if (response.data.kode == '002'){
+                this.setState({
+                    cookie: false,
+                })
+            }
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
     }
 
+    //Get moviedb API & screening schedule
     componentDidMount() {
+
+        //Get moviedb API
         axios.get(`https://api.themoviedb.org/3/movie/${this.state.movieSelected}/images?api_key=5c494406a56ba5a1cce62329a3880c81&language=en-US&include_image_language=en%2Cnull`)
         .then((ambilData) => {
             this.setState({
@@ -156,34 +190,8 @@ class MovieDetails extends Component {
         return total;
     };
 
-    //**--- LOGIN --- **\\
-    // //LOGIN - Function to change state email
-    // changeEmail(){
-    //     this.setState({email:this.refs.email.value});
-    // };
-
-    // // LOGIN - Function to change state password
-    // changePassword(){
-    //     this.setState({password:this.refs.password.value});
-    // };
-
-    // LOGIN - Authentticate the user
+    //Function to login
     login(){
-        // console.log(this.state.email)
-        // console.log(this.state.password)
-
-        // var url = 'http://localhost:5001/login';
-        // axios.post(url, {
-        //   email: this.state.email,
-        //   password: this.state.password
-        // })
-        // .then(function (response) {
-        //   console.log(response);
-        // })
-        // .catch(function (error) {
-        //   console.log(error);
-        // });
-
         var url = 'http://localhost:5001/login';
         axios.post(url, {
           email: this.refs.emaillogin.value,
@@ -193,6 +201,8 @@ class MovieDetails extends Component {
           console.log(response);
         //   console.log(response.data.kode)
           if (response.data.kode == '001'){
+            cookies.set('MOVIETIME_SESSID', response.data.session_id)
+
             this.setState({
                 email:this.refs.emaillogin.value,
                 password:this.refs.passwordlogin.value,
@@ -207,7 +217,7 @@ class MovieDetails extends Component {
 
     };
 
-    //**--- REGISTER --- **\\
+    //Function to register
     register(){
         // console.log(this.state.email)
         // console.log(this.state.password)
@@ -235,7 +245,7 @@ class MovieDetails extends Component {
         });
     };
 
-    // Function to create transaction
+    // Function to create reservation
     createReservation() {
         console.log(`Ini di create reservation ${this.state.email}`)
 
@@ -314,6 +324,316 @@ class MovieDetails extends Component {
             return <option value={item.id} key={index}>{day}, {date_time_date} {date_time_month} {date_time_year} pk. {date_time_hour}:0{date_time_minute}</option>
         })
 
+        // Tes cek cookie (tidak dipakai)
+        if (cookies.get('MOVIETIME_SESSID') != undefined) {
+            // return (
+            //     <div className="MOVIEDETAILS">
+            //         <div className="mt-moviedetails-movie">
+            //             <div className="mt-moviedetails-movie-image">
+            //                 <img className="" src={this.state.moviePoster} height="500px" alt="" /> 
+            //             </div>
+        
+            //             <div className="mt-moviedetails-movie-description">
+            //                 <h1>{this.state.movieTitle}</h1>
+            //                 <br />
+            //                 <p><strong>Synopsis<button onClick={()=> checkCookie()}>Coba</button></strong></p>
+            //                 <p>{this.state.movieOverview}</p>
+                           
+            //                 <h2>Choose your schedule</h2>
+            //                 <div className="mt-moviedetails-schedule">
+            //                     <select  onChange={(e) => this.klik(e.target.value)} className="custom-select">
+            //                         <option selected>Day</option>
+            //                         { screeningDay }
+            //                     </select>
+            //                     <br />
+            //                 </div>
+            //                 <br />
+            //                 <h2>Choose your seats</h2>
+            //                 <div className="mt-moviedetails-seats ">
+            //                     <div className="kotak-A">A</div>
+            //                     <div className="kotak-A1">
+            //                         <input type='checkbox' disabled={this.state.uncheckA1} onClick={()=>{this.seat('A1');}} />
+            //                         1
+            //                     </div>
+            //                     <div className="kotak-A2">
+            //                         <input type='checkbox' disabled={this.state.uncheckA2} onClick={()=>{this.seat('A2');}}  />
+            //                         2
+            //                     </div>
+            //                     <div className="kotak-A3">
+            //                         <input type='checkbox' disabled={this.state.uncheckA3} onClick={()=>{this.seat('A3');}} />
+            //                         3
+            //                     </div>
+            //                     <div className="kotak-A4">
+            //                         <input type='checkbox' disabled={this.state.uncheckA4} onClick={()=>{this.seat('A4');}} />
+            //                         4
+            //                     </div>
+            //                     <div className="kotak-A5">
+            //                         <input type='checkbox' disabled={this.state.uncheckA5} onClick={()=>{this.seat('A5');}} />
+            //                         5
+            //                     </div>
+            //                     <div className="kotak-B">B</div>
+            //                     <div className="kotak-B1">
+            //                         <input type='checkbox' disabled={this.state.uncheckB1} onClick={()=>{this.seat('B1');}} />
+            //                         1
+            //                     </div>
+            //                     <div className="kotak-B2">
+            //                         <input type='checkbox' disabled={this.state.uncheckB2} onClick={()=>{this.seat('B2');}} />
+            //                         2
+            //                     </div>
+            //                     <div className="kotak-B3">
+            //                         <input type='checkbox' disabled={this.state.uncheckB3} onClick={()=>{this.seat('B3');}} />
+            //                         3
+            //                     </div>
+            //                     <div className="kotak-B4">
+            //                         <input type='checkbox' disabled={this.state.uncheckB4} onClick={()=>{this.seat('B4');}} />
+            //                         4
+            //                     </div>
+            //                     <div className="kotak-B5">
+            //                         <input type='checkbox' disabled={this.state.uncheckB5} onClick={()=>{this.seat('B5');}} />
+            //                         5
+            //                     </div>
+            //                     <div className="kotak-C">C</div>
+            //                     <div className="kotak-C1">
+            //                         <input type='checkbox' disabled={this.state.uncheckC1} onClick={()=>{this.seat('C1');}} />
+            //                         1
+            //                     </div>
+            //                     <div className="kotak-C2">
+            //                         <input type='checkbox' disabled={this.state.uncheckC2} onClick={()=>{this.seat('C2');}} />
+            //                         2
+            //                     </div>
+            //                     <div className="kotak-C3">
+            //                         <input type='checkbox' disabled={this.state.uncheckC3} onClick={()=>{this.seat('C3');}} />
+            //                         3
+            //                     </div>
+            //                     <div className="kotak-C4">
+            //                         <input type='checkbox' disabled={this.state.uncheckC4} onClick={()=>{this.seat('C4');}} />
+            //                         4
+            //                     </div>
+            //                     <div className="kotak-C5">
+            //                         <input type='checkbox' disabled={this.state.uncheckC5} onClick={()=>{this.seat('C5');}} />
+            //                         5
+            //                     </div>
+            //                     <div className="kotak-D">D</div>
+            //                     <div className="kotak-D1">
+            //                         <input type='checkbox' disabled={this.state.uncheckD1} onClick={()=>{this.seat('D1');}} />
+            //                         1
+            //                     </div>
+            //                     <div className="kotak-D2">
+            //                         <input type='checkbox' disabled={this.state.uncheckD2} onClick={()=>{this.seat('D2');}} />
+            //                         2
+            //                     </div>
+            //                     <div className="kotak-D3">
+            //                         <input type='checkbox' disabled={this.state.uncheckD3} onClick={()=>{this.seat('D3');}} />
+            //                         3
+            //                     </div>
+            //                     <div className="kotak-D4">
+            //                         <input type='checkbox' disabled={this.state.uncheckD4} onClick={()=>{this.seat('D4');}} />
+            //                         4
+            //                     </div>
+            //                     <div className="kotak-D5">
+            //                         <input type='checkbox' disabled={this.state.uncheckD5} onClick={()=>{this.seat('D5');}} />
+            //                         5
+            //                     </div>
+            //                 </div>
+            //                 <br />
+                            
+            //                 <center>
+            //                     <div className="mt-moviedetails-seats-screen">
+            //                         <p align="center">SCREEN</p>
+            //                     </div>
+            //                 </center>
+            //                 <br />
+            //                 <br />
+        
+            //                 <div className="mt-summary-booking">
+            //                     <table>
+                                    
+            //                         <tr>
+            //                             <td>Seat(s) selected</td>
+            //                             <td>: {this.state.seat.toString()}</td>
+            //                         </tr>
+            //                         <tr>
+            //                             <td>Total Seats</td>
+            //                             <td>: {this.state.seat.length}</td>
+            //                         </tr>
+            //                         <tr>
+            //                             <td>Price per Ticket</td>
+            //                             <td>: Rp 40.000</td>
+            //                         </tr>
+            //                         <tr>
+            //                             <td><strong>TOTAL</strong></td>
+            //                             <td><strong>: Rp {this.totalPrice()}</strong></td>
+            //                         </tr>
+            //                     </table>
+            //                 </div>
+            //                 <br />
+            //                 {/* <Link to="/login"><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>                 */}
+            //                 {/* Button trigger modal */}
+                            
+            //                 <button type="button" class="btn btn-warning">
+            //                 BUY TICKET
+            //                 </button>
+            //             </div>
+            //         </div>
+            //     </div>
+            //     );
+        }
+
+        // Cek cookie
+        if (this.state.cookie == true){
+            return (
+                <div className="MOVIEDETAILS">
+                    <div className="mt-moviedetails-movie">
+                        <div className="mt-moviedetails-movie-image">
+                            <img className="" src={this.state.moviePoster} height="500px" alt="" /> 
+                        </div>
+        
+                        <div className="mt-moviedetails-movie-description">
+                            <h1>{this.state.movieTitle}</h1>
+                            <br />
+                            <p><strong>Synopsis</strong></p>
+                            <p>{this.state.movieOverview}</p>
+                           
+                            <h2>Choose your schedule</h2>
+                            <div className="mt-moviedetails-schedule">
+                                <select  onChange={(e) => this.klik(e.target.value)} className="custom-select">
+                                    <option selected>Day</option>
+                                    { screeningDay }
+                                </select>
+                                <br />
+                            </div>
+                            <br />
+                            <h2>Choose your seats</h2>
+                            <div className="mt-moviedetails-seats ">
+                                <div className="kotak-A">A</div>
+                                <div className="kotak-A1">
+                                    <input type='checkbox' disabled={this.state.uncheckA1} onClick={()=>{this.seat('A1');}} />
+                                    1
+                                </div>
+                                <div className="kotak-A2">
+                                    <input type='checkbox' disabled={this.state.uncheckA2} onClick={()=>{this.seat('A2');}}  />
+                                    2
+                                </div>
+                                <div className="kotak-A3">
+                                    <input type='checkbox' disabled={this.state.uncheckA3} onClick={()=>{this.seat('A3');}} />
+                                    3
+                                </div>
+                                <div className="kotak-A4">
+                                    <input type='checkbox' disabled={this.state.uncheckA4} onClick={()=>{this.seat('A4');}} />
+                                    4
+                                </div>
+                                <div className="kotak-A5">
+                                    <input type='checkbox' disabled={this.state.uncheckA5} onClick={()=>{this.seat('A5');}} />
+                                    5
+                                </div>
+                                <div className="kotak-B">B</div>
+                                <div className="kotak-B1">
+                                    <input type='checkbox' disabled={this.state.uncheckB1} onClick={()=>{this.seat('B1');}} />
+                                    1
+                                </div>
+                                <div className="kotak-B2">
+                                    <input type='checkbox' disabled={this.state.uncheckB2} onClick={()=>{this.seat('B2');}} />
+                                    2
+                                </div>
+                                <div className="kotak-B3">
+                                    <input type='checkbox' disabled={this.state.uncheckB3} onClick={()=>{this.seat('B3');}} />
+                                    3
+                                </div>
+                                <div className="kotak-B4">
+                                    <input type='checkbox' disabled={this.state.uncheckB4} onClick={()=>{this.seat('B4');}} />
+                                    4
+                                </div>
+                                <div className="kotak-B5">
+                                    <input type='checkbox' disabled={this.state.uncheckB5} onClick={()=>{this.seat('B5');}} />
+                                    5
+                                </div>
+                                <div className="kotak-C">C</div>
+                                <div className="kotak-C1">
+                                    <input type='checkbox' disabled={this.state.uncheckC1} onClick={()=>{this.seat('C1');}} />
+                                    1
+                                </div>
+                                <div className="kotak-C2">
+                                    <input type='checkbox' disabled={this.state.uncheckC2} onClick={()=>{this.seat('C2');}} />
+                                    2
+                                </div>
+                                <div className="kotak-C3">
+                                    <input type='checkbox' disabled={this.state.uncheckC3} onClick={()=>{this.seat('C3');}} />
+                                    3
+                                </div>
+                                <div className="kotak-C4">
+                                    <input type='checkbox' disabled={this.state.uncheckC4} onClick={()=>{this.seat('C4');}} />
+                                    4
+                                </div>
+                                <div className="kotak-C5">
+                                    <input type='checkbox' disabled={this.state.uncheckC5} onClick={()=>{this.seat('C5');}} />
+                                    5
+                                </div>
+                                <div className="kotak-D">D</div>
+                                <div className="kotak-D1">
+                                    <input type='checkbox' disabled={this.state.uncheckD1} onClick={()=>{this.seat('D1');}} />
+                                    1
+                                </div>
+                                <div className="kotak-D2">
+                                    <input type='checkbox' disabled={this.state.uncheckD2} onClick={()=>{this.seat('D2');}} />
+                                    2
+                                </div>
+                                <div className="kotak-D3">
+                                    <input type='checkbox' disabled={this.state.uncheckD3} onClick={()=>{this.seat('D3');}} />
+                                    3
+                                </div>
+                                <div className="kotak-D4">
+                                    <input type='checkbox' disabled={this.state.uncheckD4} onClick={()=>{this.seat('D4');}} />
+                                    4
+                                </div>
+                                <div className="kotak-D5">
+                                    <input type='checkbox' disabled={this.state.uncheckD5} onClick={()=>{this.seat('D5');}} />
+                                    5
+                                </div>
+                            </div>
+                            <br />
+                            
+                            <center>
+                                <div className="mt-moviedetails-seats-screen">
+                                    <p align="center">SCREEN</p>
+                                </div>
+                            </center>
+                            <br />
+                            <br />
+        
+                            <div className="mt-summary-booking">
+                                <table>
+                                    
+                                    <tr>
+                                        <td>Seat(s) selected</td>
+                                        <td>: {this.state.seat.toString()}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Total Seats</td>
+                                        <td>: {this.state.seat.length}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Price per Ticket</td>
+                                        <td>: Rp 40.000</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>TOTAL</strong></td>
+                                        <td><strong>: Rp {this.totalPrice()}</strong></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <br />
+                            {/* <Link to="/login"><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>                 */}
+                            {/* Button trigger modal */}
+                            
+                            <button type="button" class="btn btn-warning">
+                            BUY TICKET
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                );
+        }
+
         return (
         <div className="MOVIEDETAILS">
             <div className="mt-moviedetails-movie">
@@ -322,22 +642,11 @@ class MovieDetails extends Component {
                 </div>
 
                 <div className="mt-moviedetails-movie-description">
-                    <h1>{this.state.movieTitle}</h1>
+                    <h1>{this.state.movieTitle}{this.state.cookie}</h1>
                     <br />
                     <p><strong>Synopsis</strong></p>
                     <p>{this.state.movieOverview}</p>
-                    {/* <table>
-                        <tr>
-                            <th>Genndy Tartakovsky</th>
-                            <th>Michael McCullers</th>
-                        </tr>
-                        <tr>
-                            <td>Director, Writer</td>
-                            <td>Writer</td>
-                        </tr>
-                    </table>
-                    <br />
-                    <br /> */}
+                   
                     <h2>Choose your schedule</h2>
                     <div className="mt-moviedetails-schedule">
                         <select  onChange={(e) => this.klik(e.target.value)} className="custom-select">
@@ -468,6 +777,7 @@ class MovieDetails extends Component {
                     <br />
                     {/* <Link to="/login"><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>                 */}
                     {/* Button trigger modal */}
+
                     <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#exampleModalCenter">
                     BUY TICKET
                     </button>
@@ -486,10 +796,10 @@ class MovieDetails extends Component {
                 </div>
                 <div class="modal-body">
                     <p>Please login to continue</p>
-                    <input type='text' placeholder=' Email' ref="emaillogin" />
+                    <input type='text' placeholder=' Email' ref="emaillogin" value="andi@yahoo.com" />
                     <br />
                     <br />
-                    <input type='email' placeholder=' Password' ref="passwordlogin" />
+                    <input type='email' placeholder=' Password' ref="passwordlogin" value="andi1234" />
                     <br/>
                     <br/>
                     <button type="button" class="btn btn-primary" onClick={()=> {this.login();}}>LOGIN</button>

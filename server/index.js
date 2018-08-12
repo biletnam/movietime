@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 
+const uuidv4 = require('uuid/v4');
+
 const cors = require('cors');
 app.use(cors());
 
@@ -43,18 +45,34 @@ app.post('/login', (req, res, next) => {
   passport.authenticate('local', function(err, user, info) {
     console.log("Infooo:", info)
     console.log("User:", user)
-    res.send(user)
+    
+    if (user.kode == '001') {
+        // nyimpen sessionID di server
+        let sql = `INSERT INTO session(session_id, user_id) VALUES ('${user.session_id}',(select id from user where email='${user.email}'))`;
+        db.query(sql, (err, result) => {
+            if(err) throw err;
+            //console.log("BERHASIUL KANNN")
+            //res.cookie("MOVIETIME_SESSID", sessionID, {maxAge: 3600*5*1000, httpOnly:true})
+            //res.cookie("MOVIETIME_SESSID", sessionID, {maxAge: new Date(Date.now).getTime() + (3600*5*1000)})
+            res.send(user)   
+        })
+    } else {
+        res.send(user)
+    }
+    
   }) (req, res, next);
 });
 
 
 passport.use(new LocalStrategy ({
     usernameField: 'email',
-    passwordField: 'password'
+    passwordField: 'password',
+    //passReqToCallback: true,
 },
     (email, password, done) => {
         console.log(email)
         console.log(password)
+        //console.log("HUEHEHEHEH",req)
 
         let sql =  `select count(*) hitung from user where email = '${email}' and password = '${password}'`
         db.query(sql, (err, result) => {
@@ -63,7 +81,8 @@ passport.use(new LocalStrategy ({
 
         if (result[0].hitung == 1){
             console.log(`Berhasil`)
-            return done(null, { kode: '001' });
+            let sessionID = uuidv4()
+            return done(null, { kode: '001', email: email, session_id: sessionID });
 
         } else {
             console.log(`Gagal`)
@@ -108,6 +127,43 @@ app.post('/createreservation', (req, res) => {
                 console.log(result);
             })
         }
+    })
+})
+
+app.post('/cookie', (req, res) => {
+    console.log(`Ini req.body cookie: ${req.body.cookieMovietime}`)
+
+    let sql =  `select count(*) hitung from session where session_id = '${req.body.cookieMovietime}'`    
+    db.query(sql, (err, result) => {
+
+        if (result[0].hitung == 1){
+            console.log(`Berhasil`)
+            res.send({
+                kode: '001',
+                status: 'Ada session dengan cookie tersebut di server'
+            });
+
+        } else {
+            console.log(`Gagal`)
+            res.send({
+                kode: '002',
+                status: 'Tidak da session dengan cookie tersebut di server'
+            });
+        }    
+    });
+})
+
+app.post('/signout', (req, res) => {
+    console.log(req.body.cookieMovietime)
+    let sql =  `delete from session where session_id = '${req.body.cookieMovietime}'`
+    // console.log(sql)
+    db.query(sql, (err, result) => {
+        if(err) throw err;
+        console.log(result);
+        res.send({
+            kode: '001',
+            status: 'Berhasil hapus session',
+	});
     })
 })
 
