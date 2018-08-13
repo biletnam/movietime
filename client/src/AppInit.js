@@ -8,6 +8,7 @@ import { Route, withRouter } from 'react-router-dom';
 import Header from './component/Header';
 import Home from './component/Home';
 import Footer from './component/Footer';
+import PaymentSuccess from './component/PaymentSuccess'
 import Admin from './component/Admin';
 
 // Component for Routes
@@ -20,8 +21,9 @@ class AppInit extends Component {
       <div className="AppInit">
         <Header />
           <Route exact path="/" component={Home} />
-          <Route path="/:id" component={MovieDetails} />
-          <Route path="/payment" component={Payment} />        
+          <Route path="/movie/:id" component={MovieDetails} />
+          <Route path="/payment" component={Payment} />
+          <Route path="/paymentsuccess" component={PaymentSuccess} />        
         <Footer />
       </div>
     );

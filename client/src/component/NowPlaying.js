@@ -12,6 +12,9 @@ class NowPlaying extends Component {
             // movie1: '299536',
             // movie2: '353486',
             // movie3: '402900',
+            movieLink1: '',
+            movieLink2: '',
+            movieLink3: '',
             moviePoster1: '',
             moviePoster2: '',
             moviePoster3: '',
@@ -27,6 +30,7 @@ class NowPlaying extends Component {
         .then((ambilData) => {
             this.setState({
                 moviePoster1: `https://image.tmdb.org/t/p/original${ambilData.data.posters[0].file_path}`,
+                movieLink1: `/movie/${this.props.movie1}`
             })
         })
         axios.get(`https://api.themoviedb.org/3/movie/${this.props.movie1}?api_key=5c494406a56ba5a1cce62329a3880c81&language=en-US`)
@@ -40,6 +44,7 @@ class NowPlaying extends Component {
         .then((ambilData) => {
             this.setState({
                 moviePoster2: `https://image.tmdb.org/t/p/original${ambilData.data.posters[0].file_path}`,
+                movieLink2: `/movie/${this.props.movie2}`
             })
         })
         axios.get(`https://api.themoviedb.org/3/movie/${this.props.movie2}?api_key=5c494406a56ba5a1cce62329a3880c81&language=en-US`)
@@ -53,6 +58,7 @@ class NowPlaying extends Component {
         .then((ambilData) => {
             this.setState({
                 moviePoster3: `https://image.tmdb.org/t/p/original${ambilData.data.posters[0].file_path}`,
+                movieLink3: `/movie/${this.props.movie3}`
             })
         })
         axios.get(`https://api.themoviedb.org/3/movie/${this.props.movie3}?api_key=5c494406a56ba5a1cce62329a3880c81&language=en-US`)
@@ -76,7 +82,7 @@ class NowPlaying extends Component {
                 <div className="card-body">
                     <h5 className="card-title">{this.state.movieTitle1}</h5>
                     <p className="card-text"><small className="text-muted">Last updated 3 mins ago</small></p>                
-                    <Link to={this.props.movie1}><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>                
+                    <Link to={this.state.movieLink1}><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>                
                 </div>
             </div>
             <div className="card">
@@ -84,7 +90,7 @@ class NowPlaying extends Component {
                 <div className="card-body">
                     <h5 className="card-title">{this.state.movieTitle2}</h5>
                     <p className="card-text"><small className="text-muted">Last updated 3 mins ago</small></p>
-                    <Link to={this.props.movie2}><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>                
+                    <Link to={this.state.movieLink2}><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>                
                 </div>
             </div>
             <div className="card">
@@ -93,7 +99,7 @@ class NowPlaying extends Component {
                     <h5 className="card-title">{this.state.movieTitle3}</h5>
                     <br />
                     <p className="card-text"><small className="text-muted">Last updated 3 mins ago</small></p>                
-                    <Link to={this.props.movie3}><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>          
+                    <Link to={this.state.movieLink3}><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>          
                 </div>
             </div>
         </div>

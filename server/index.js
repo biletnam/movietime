@@ -125,11 +125,13 @@ app.post('/createreservation', (req, res) => {
             console.log(sql3)
             db.query(sql3, (err, result) => {
                 if (err) throw err;
-                // res.send({
-                //     status: 'Dari backend: berhasil create reservation'
-                // })
             })
         }
+
+        res.send({
+            status: 'Dari backend: berhasil create reservation'
+        })
+
     })
 })
 

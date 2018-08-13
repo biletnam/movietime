@@ -73,9 +73,9 @@ class Payment extends Component {
                         </div>
                         <hr/>
                         <div class="form-group row">
-                            <div class="col-md-6">
+                            {/* <div class="col-md-6">
                                 <button type="reset" class="btn btn-default btn-lg btn-block">Cancel</button>
-                            </div>
+                            </div> */}
                             <div class="col-md-6">
                             <Link to="/paymentsuccess"><button type="submit" class="btn btn-success btn-lg btn-block">Submit</button></Link>
                             </div>

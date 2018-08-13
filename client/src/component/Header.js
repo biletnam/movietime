@@ -28,8 +28,8 @@ class Header extends Component {
             cookieMovietime: cookiePeramban,
         })
         .then((response) => {
-            console.log(response);
-            console.log(response.data.kode)
+            // console.log(response);
+            // console.log(response.data.kode)
             if (response.data.kode == '001'){
                 this.setState({
                     cookie: true,
@@ -67,8 +67,8 @@ class Header extends Component {
 
     //Function to login
     login(){
-        console.log(this.refs.emaillogin.value)
-        console.log(this.refs.passwordlogin.value)
+        // console.log(this.refs.emaillogin.value)
+        // console.log(this.refs.passwordlogin.value)
 
         var url = 'http://localhost:5001/login';
         axios.post(url, {
@@ -76,8 +76,8 @@ class Header extends Component {
           password: this.refs.passwordlogin.value
         })
         .then((response) => {
-          console.log(response);
-          console.log(response.data.kode)
+        //   console.log(response);
+        //   console.log(response.data.kode)
           if (response.data.kode == '001'){
             cookies.set('MOVIETIME_SESSID', response.data.session_id)
 
@@ -87,8 +87,8 @@ class Header extends Component {
                 cookie: true
             });
 
-            // this.cekCookieLagi();
-            console.log(`Ini setelah berhasil register di header ${this.state.email}`)
+            window.location.reload()
+            console.log(`Berhasil login + session + cookie: ${this.state.cookie}`)
           }
         })
         .catch(function (error) {
@@ -96,35 +96,8 @@ class Header extends Component {
         });
     }
 
-    // cekCookieLagi(){
-    //     //Check cookies
-    //     let cookiePeramban = cookies.get('MOVIETIME_SESSID')
-    //     console.log(cookiePeramban)
-        
-    //     var url = 'http://localhost:5001/cookie';
-    //     axios.post(url, {
-    //         cookieMovietime: cookiePeramban,
-    //     })
-    //     .then((response) => {
-    //         console.log(response);
-    //         console.log(response.data.kode)
-    //         if (response.data.kode == '001'){
-    //             this.setState({
-    //                 cookie: true,
-    //             })
-    //         }
-    //         else if (response.data.kode == '002'){
-    //             this.setState({
-    //                 cookie: false,
-    //             })
-    //         }
-    //     })
-    //     .catch(function (error) {
-    //         console.log(error);
-    //     });
-    // }
-
     signOut(){
+        console.log(`Tes tombol logout jalan ga abis loghin`)
         let cookiePeramban = cookies.get('MOVIETIME_SESSID')
         console.log(cookiePeramban)
 

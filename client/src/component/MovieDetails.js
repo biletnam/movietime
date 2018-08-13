@@ -236,13 +236,16 @@ class MovieDetails extends Component {
         .then((response) => {
           console.log(response);
           if (response.data.kode == '001'){
+
             this.setState({
                 email:this.refs.emailregister.value,
                 password:this.refs.passwordregister.value,
                 passwordconfirm:this.refs.passwordregisterconfirm.value
             });
+
             console.log(`Ini setelah berahasil register ${this.state.email}`)
             this.createReservation();
+            
           }
         })
         .catch((error) => {
@@ -262,7 +265,13 @@ class MovieDetails extends Component {
             theater: this.state.theater,
             seat: this.state.seat,
         })
-        .then(() => {
+        .then((response) => {
+            console.log(`Berhasil!`)
+                this.setState({
+                    cookie: true
+                });
+
+            window.location.reload();
             // console.log(response);
             // window.location.reload()
             // console.log(`Ini setelah berhasil create reservation`)
@@ -272,6 +281,7 @@ class MovieDetails extends Component {
         });
     }
 
+    
     render() {
         //Show screening schedule in neat view
         const screeningDay =this.state.screeningSchedule.map((item, index)=>{
@@ -629,9 +639,69 @@ class MovieDetails extends Component {
                                 </table>
                             </div>
                             <br />
-                            <Link to="/payment">                               
-                            <button type="button" class="btn btn-warning">BUY TICKET</button>
-                            </Link>
+
+                            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#summary" data-backdrop='false'>
+                                BUY TICKET
+                            </button>
+                        </div>
+                    </div>
+
+
+                    {/* Modal */}
+                    <div class="modal fade" id="summary" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalCenterTitle">SUMMARY</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td>Movie Name</td>
+                                            <td>: {this.state.movieTitle}</td>
+                                        </tr>
+                                        {/* <tr>
+                                            <td>Schedule</td>
+                                            <td>: {this.state.screeningSelected}</td>
+                                        </tr> */}
+                                        <tr>
+                                            <td>Theater</td>
+                                            <td>: {this.state.theater}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Seat(s) selected</td>
+                                            <td>: {this.state.seat.toString()}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Total Seats</td>
+                                            <td>: {this.state.seat.length}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Price per Ticket</td>
+                                            <td>: Rp 40.000</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>TOTAL</strong></td>
+                                            <td><strong>: Rp {this.totalPrice()}</strong></td>
+                                        </tr>
+                                        
+                                    </tbody>
+                                </table>
+                                <br />
+                                <br />
+
+                                <Link to="/payment">                               
+                                    <button type="button" class="btn btn-warning">CHECK OUT</button>
+                                </Link>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                            </div>
                         </div>
                     </div>
                 </div>
