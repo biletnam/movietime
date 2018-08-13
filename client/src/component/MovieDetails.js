@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import Cookies from 'universal-cookie';
 import '../style/MovieDetails.css'
 
 // Modules
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
+//Cookies
+import Cookies from 'universal-cookie';
 const cookies = new Cookies();
 
 class MovieDetails extends Component {
@@ -52,8 +54,10 @@ class MovieDetails extends Component {
         this.klik = this.klik.bind(this);
     };
 
-    //Get movie id
+    //Get movie id & check cookies
     componentWillMount() {
+
+        //Get movie id 
         this.setState({
             movieSelected: this.props.match.params.id
         })
@@ -88,7 +92,7 @@ class MovieDetails extends Component {
     //Get moviedb API & screening schedule
     componentDidMount() {
 
-        //Get moviedb API
+        //Get moviedb.org content
         axios.get(`https://api.themoviedb.org/3/movie/${this.state.movieSelected}/images?api_key=5c494406a56ba5a1cce62329a3880c81&language=en-US&include_image_language=en%2Cnull`)
         .then((ambilData) => {
             this.setState({
@@ -111,6 +115,7 @@ class MovieDetails extends Component {
           })            
         })
         
+        // Supaya halaman mulai dari atas
         window.scrollTo(0, 0)        
     };
 
@@ -257,8 +262,10 @@ class MovieDetails extends Component {
             theater: this.state.theater,
             seat: this.state.seat,
         })
-        .then(function (response) {
-            console.log(response);
+        .then(() => {
+            // console.log(response);
+            // window.location.reload()
+            // console.log(`Ini setelah berhasil create reservation`)
         })
         .catch(function (error) {
             console.log(error);
@@ -622,12 +629,9 @@ class MovieDetails extends Component {
                                 </table>
                             </div>
                             <br />
-                            {/* <Link to="/login"><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>                 */}
-                            {/* Button trigger modal */}
-                            
-                            <button type="button" class="btn btn-warning">
-                            BUY TICKET
-                            </button>
+                            <Link to="/payment">                               
+                            <button type="button" class="btn btn-warning">BUY TICKET</button>
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -802,7 +806,7 @@ class MovieDetails extends Component {
                     <input type='email' placeholder=' Password' ref="passwordlogin" value="andi1234" />
                     <br/>
                     <br/>
-                    <button type="button" class="btn btn-primary" onClick={()=> {this.login();}}>LOGIN</button>
+                    <button type="button" class="btn btn-primary" onClick={()=> {this.login();}}>LOG IN</button>
                     <br />
                     <br />
                     <p>Don't have account? Register now</p>

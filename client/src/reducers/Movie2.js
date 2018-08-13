@@ -1,4 +1,4 @@
-const INITIAL_STATE = '';
+const INITIAL_STATE = '353486';
 
 export default (state = INITIAL_STATE, action) => {
     //initial_state sebagai default value dan hanya berjalan pertama kali

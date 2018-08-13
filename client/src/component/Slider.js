@@ -7,9 +7,9 @@ import { connect } from 'react-redux';
 
 class Slider extends Component {
     state = {
-        movie1: '299536',
-        movie2: '353486',
-        movie3: '402900',
+        // movie1: '299536',
+        // movie2: '353486',
+        // movie3: '402900',
         movieSlider1: '',
         movieSlider2: '',
         movieSlider3: '',
@@ -19,17 +19,18 @@ class Slider extends Component {
     }
 
     componentDidMount() {
+        // console.log(this.props.movie1)
         { this.createCarousel() }
     }
 
     createCarousel() {
-        axios.get(`https://api.themoviedb.org/3/movie/${this.state.movie1}/images?api_key=5c494406a56ba5a1cce62329a3880c81&language=en-US&include_image_language=en%2Cnull`)
+        axios.get(`https://api.themoviedb.org/3/movie/${this.props.movie1}/images?api_key=5c494406a56ba5a1cce62329a3880c81&language=en-US&include_image_language=en%2Cnull`)
         .then((ambilData) => {
             this.setState({
                 movieSlider1: `https://image.tmdb.org/t/p/original${ambilData.data.backdrops[0].file_path}`,
             })
         })
-        axios.get(`https://api.themoviedb.org/3/movie/${this.state.movie1}?api_key=5c494406a56ba5a1cce62329a3880c81&language=en-US`)
+        axios.get(`https://api.themoviedb.org/3/movie/${this.props.movie1}?api_key=5c494406a56ba5a1cce62329a3880c81&language=en-US`)
         .then((ambilData) => {
             this.setState({
                 movieTitle1: ambilData.data.original_title,
@@ -37,14 +38,14 @@ class Slider extends Component {
             })
         })
 
-        axios.get(`https://api.themoviedb.org/3/movie/${this.state.movie2}/images?api_key=5c494406a56ba5a1cce62329a3880c81&language=en-US&include_image_language=en%2Cnull`)
+        axios.get(`https://api.themoviedb.org/3/movie/${this.props.movie2}/images?api_key=5c494406a56ba5a1cce62329a3880c81&language=en-US&include_image_language=en%2Cnull`)
         .then((ambilData) => {
             this.setState({
                 movieSlider2: `https://image.tmdb.org/t/p/original${ambilData.data.backdrops[0].file_path}`,
             })
         })
 
-        axios.get(`https://api.themoviedb.org/3/movie/${this.state.movie2}?api_key=5c494406a56ba5a1cce62329a3880c81&language=en-US`)
+        axios.get(`https://api.themoviedb.org/3/movie/${this.props.movie2}?api_key=5c494406a56ba5a1cce62329a3880c81&language=en-US`)
         .then((ambilData) => {
             this.setState({
                 movieTitle2: ambilData.data.original_title,
@@ -52,14 +53,14 @@ class Slider extends Component {
             })
         })
 
-        axios.get(`https://api.themoviedb.org/3/movie/${this.state.movie3}/images?api_key=5c494406a56ba5a1cce62329a3880c81&language=en-US&include_image_language=en%2Cnull`)
+        axios.get(`https://api.themoviedb.org/3/movie/${this.props.movie3}/images?api_key=5c494406a56ba5a1cce62329a3880c81&language=en-US&include_image_language=en%2Cnull`)
         .then((ambilData) => {
             this.setState({
                 movieSlider3: `https://image.tmdb.org/t/p/original${ambilData.data.backdrops[0].file_path}`,
             })
         })
 
-        axios.get(`https://api.themoviedb.org/3/movie/${this.state.movie3}?api_key=5c494406a56ba5a1cce62329a3880c81&language=en-US`)
+        axios.get(`https://api.themoviedb.org/3/movie/${this.props.movie3}?api_key=5c494406a56ba5a1cce62329a3880c81&language=en-US`)
         .then((ambilData) => {
             this.setState({
                 movieTitle3: ambilData.data.original_title,
@@ -81,9 +82,9 @@ class Slider extends Component {
                 <div className="carousel-item active mt-slider">
                     <img className="d-block w-100 mt-slider-crop" src={this.state.movieSlider1} alt="Third slide"/>
                     <div className="carousel-caption d-none d-md-block">
-                        <h1>{this.state.movieTitle1}{this.props.movie1}</h1>
+                        <h1>{this.state.movieTitle1}</h1>
                         <p>{this.state.movieTagline1}</p>
-                        <Link to={this.state.movie1}><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>
+                        <Link to={this.props.movie1}><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>
                     </div>
                 </div>
                 <div className="carousel-item mt-slider">
@@ -91,7 +92,7 @@ class Slider extends Component {
                     <div className="carousel-caption d-none d-md-block">
                         <h1>{this.state.movieTitle2}</h1>
                         <p>{this.state.movieTagline2}</p>
-                        <Link to={this.state.movie2}><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>
+                        <Link to={this.props.movie2}><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>
                     </div>
                 </div>
                 <div className="carousel-item mt-slider">
@@ -100,7 +101,7 @@ class Slider extends Component {
                         <div>
                             <h1>{this.state.movieTitle3}</h1>
                             <p>{this.state.movieTagline3}</p>
-                            <Link to={this.state.movie3}><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>
+                            <Link to={this.props.movie3}><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>
                         </div>
                     </div>
                 </div>

@@ -13,6 +13,8 @@ class Header extends Component {
             dynamic_Class: 'navbar navbar-expand-md fixed-top',
             dynamic_height: '80px',
             logo: require('../img/movietimecom-transparent-crop.png'),
+            email: '',
+            password: ''
         }
     }
 
@@ -43,6 +45,7 @@ class Header extends Component {
             console.log(error);
         });
     }
+
     componentDidMount() {
         document.addEventListener('scroll', () => {
             if (window.scrollY > 50) {
@@ -62,6 +65,65 @@ class Header extends Component {
         });
     }
 
+    //Function to login
+    login(){
+        console.log(this.refs.emaillogin.value)
+        console.log(this.refs.passwordlogin.value)
+
+        var url = 'http://localhost:5001/login';
+        axios.post(url, {
+          email: this.refs.emaillogin.value,
+          password: this.refs.passwordlogin.value
+        })
+        .then((response) => {
+          console.log(response);
+          console.log(response.data.kode)
+          if (response.data.kode == '001'){
+            cookies.set('MOVIETIME_SESSID', response.data.session_id)
+
+            this.setState({
+                email:this.refs.emaillogin.value,
+                password:this.refs.passwordlogin.value,
+                cookie: true
+            });
+
+            // this.cekCookieLagi();
+            console.log(`Ini setelah berhasil register di header ${this.state.email}`)
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
+
+    // cekCookieLagi(){
+    //     //Check cookies
+    //     let cookiePeramban = cookies.get('MOVIETIME_SESSID')
+    //     console.log(cookiePeramban)
+        
+    //     var url = 'http://localhost:5001/cookie';
+    //     axios.post(url, {
+    //         cookieMovietime: cookiePeramban,
+    //     })
+    //     .then((response) => {
+    //         console.log(response);
+    //         console.log(response.data.kode)
+    //         if (response.data.kode == '001'){
+    //             this.setState({
+    //                 cookie: true,
+    //             })
+    //         }
+    //         else if (response.data.kode == '002'){
+    //             this.setState({
+    //                 cookie: false,
+    //             })
+    //         }
+    //     })
+    //     .catch(function (error) {
+    //         console.log(error);
+    //     });
+    // }
+
     signOut(){
         let cookiePeramban = cookies.get('MOVIETIME_SESSID')
         console.log(cookiePeramban)
@@ -75,6 +137,7 @@ class Header extends Component {
           if (response.data.kode == '001'){
             cookies.remove('MOVIETIME_SESSID')
           }
+          window.location.reload()
         })
         .catch((error) => {
           console.log(error);
@@ -93,7 +156,7 @@ class Header extends Component {
 
                         <ul class="nav navbar-nav navbar-right">
                             <li class="dropdown">
-                                <button className="btn btn-warning mt-btn my-2 my-sm-0" onClick={()=> this.signOut()}>SIGN OUT<span class="caret"></span></button>
+                                <button className="btn btn-warning mt-btn my-2 my-sm-0" onClick={()=> this.signOut()}>LOG OUT<span class="caret"></span></button>
                             </li>
                         </ul>
                     </nav>
@@ -110,37 +173,42 @@ class Header extends Component {
 
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
-                        <button className="btn btn-warning mt-btn my-2 my-sm-0 dropdown-toggle" data-toggle="dropdown">SIGN IN<span class="caret"></span></button>
+                        <button className="btn btn-warning mt-btn my-2 my-sm-0 dropdown-toggle" data-toggle="dropdown">LOG IN<span class="caret"></span></button>
                         
                         <ul id="login-dp" class="dropdown-menu dropdown-menu-right">
                             <li>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        Login via
+                                        {/* Login via
                                         <div class="social-buttons">
                                             <a href="#" class="btn btn-fb"><i class="fa fa-facebook"></i> Facebook</a>
                                             <a href="#" class="btn btn-tw"><i class="fa fa-twitter"></i> Twitter</a>
                                         </div>
-                                        or
-                                        <form class="form" role="form" method="post" action="login" accept-charset="UTF-8" id="login-nav">
+                                        or */}
+                                        {/* <form class="form" role="form" method="post" action="login" accept-charset="UTF-8" id="login-nav"> */}
+                                        {/* <form class="form" role="form" accept-charset="UTF-8" id="login-nav"> */}
+                                        {/* <form>
                                                 <div class="form-group">
                                                     <label class="sr-only" for="exampleInputEmail2">Email address</label>
-                                                    <input type="email" class="form-control" id="exampleInputEmail2" placeholder="Email address" required />
+                                                    <input ref='emaillogin' type="email" class="form-control" id="exampleInputEmail2" placeholder="Email address" required />
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="sr-only" for="exampleInputPassword2">Password</label>
-                                                    <input type="password" class="form-control" id="exampleInputPassword2" placeholder="Password" required />
-                                                    <div class="help-block text-right"><a href="">Forget the password ?</a></div>
+                                                    <input ref='passwordlogin' type="password" class="form-control" id="exampleInputPassword2" placeholder="Password" required />
                                                 </div>
                                                 <div class="form-group">
-                                                    <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+                                                    <button class="btn btn-primary btn-block" onClick={()=> {this.login();}}>LOG IN</button>
                                                 </div>
-                                                <div class="checkbox">
-                                                    <label>
-                                                    <input type="checkbox" /> keep me logged-in
-                                                    </label>
-                                                </div>
-                                        </form>
+                                        </form> */}
+
+                                        <div>
+                                                <label class="sr-only" for="exampleInputEmail2">Email address</label>
+                                                <input ref='emaillogin' type="email" class="form-control" id="exampleInputEmail2" placeholder="Email address" required />
+                                                <label class="sr-only" for="exampleInputPassword2">Password</label>
+                                                <input ref='passwordlogin' type="password" class="form-control" id="exampleInputPassword2" placeholder="Password" required />
+                                                <button class="btn btn-primary btn-block" onClick={()=> {this.login();}}>LOG IN</button>
+                                        </div>
+
                                     </div>
                                     <div class="bottom text-center">
                                         New here ? <a href="#" data-toggle="modal" data-target="#registerModal"><b>Join Us</b></a>

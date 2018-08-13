@@ -54,7 +54,8 @@ app.post('/login', (req, res, next) => {
             //console.log("BERHASIUL KANNN")
             //res.cookie("MOVIETIME_SESSID", sessionID, {maxAge: 3600*5*1000, httpOnly:true})
             //res.cookie("MOVIETIME_SESSID", sessionID, {maxAge: new Date(Date.now).getTime() + (3600*5*1000)})
-            res.send(user)   
+            res.send(user)
+            console.log(user)   
         })
     } else {
         res.send(user)
@@ -124,7 +125,9 @@ app.post('/createreservation', (req, res) => {
             console.log(sql3)
             db.query(sql3, (err, result) => {
                 if (err) throw err;
-                console.log(result);
+                // res.send({
+                //     status: 'Dari backend: berhasil create reservation'
+                // })
             })
         }
     })
@@ -147,7 +150,7 @@ app.post('/cookie', (req, res) => {
             console.log(`Gagal`)
             res.send({
                 kode: '002',
-                status: 'Tidak da session dengan cookie tersebut di server'
+                status: 'Tidak ada session dengan cookie tersebut di server'
             });
         }    
     });
@@ -164,6 +167,26 @@ app.post('/signout', (req, res) => {
             kode: '001',
             status: 'Berhasil hapus session',
 	});
+    })
+})
+
+app.post('/adminlogin', (req, res) => {
+    let sql =  `select count(*) hitung from admin where username='${req.body.username}' and password='${req.body.password}';`
+    db.query(sql, (err, result) => {
+        if (result[0].hitung == 1){
+            console.log(`Berhasil`)
+            res.send({
+                kode: '001',
+                status: 'Admin berhasil login'
+            });
+
+        } else {
+            console.log(`Gagal`)
+            res.send({
+                kode: '002',
+                status: 'Admin gagal login'
+            });
+        }
     })
 })
 
