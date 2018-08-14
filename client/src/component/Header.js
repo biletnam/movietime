@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 import '../style/Header.css'
+
+// import { connect } from 'react-redux';
+// import { email, password } from '../actions';
+
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+
 import Cookies from 'universal-cookie';
 const cookies = new Cookies();
 
@@ -86,6 +91,9 @@ class Header extends Component {
                 password:this.refs.passwordlogin.value,
                 cookie: true
             });
+
+            // this.props.email(this.refs.emaillogin.value);
+            // this.props.password(this.refs.passwordlogin.value);
 
             window.location.reload()
             console.log(`Berhasil login + session + cookie: ${this.state.cookie}`)
@@ -227,4 +235,5 @@ class Header extends Component {
 }
 
 export default Header;
+// export default connect(null, {email, password})(Header);
 

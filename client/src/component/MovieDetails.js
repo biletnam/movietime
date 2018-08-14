@@ -4,6 +4,7 @@ import '../style/MovieDetails.css'
 // Modules
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+// import { connect } from 'react-redux';
 
 //Cookies
 import Cookies from 'universal-cookie';
@@ -219,7 +220,6 @@ class MovieDetails extends Component {
         .catch(function (error) {
           console.log(error);
         });
-
     };
 
     //Function to register
@@ -234,13 +234,15 @@ class MovieDetails extends Component {
           passwordConfirm: this.refs.passwordregisterconfirm.value
         })
         .then((response) => {
-          console.log(response);
+          console.log(`Ini response register: ${response.data}`);
           if (response.data.kode == '001'){
+            cookies.set('MOVIETIME_SESSID', response.data.session_id)
 
             this.setState({
                 email:this.refs.emailregister.value,
                 password:this.refs.passwordregister.value,
-                passwordconfirm:this.refs.passwordregisterconfirm.value
+                passwordconfirm:this.refs.passwordregisterconfirm.value,
+                cookie: true
             });
 
             console.log(`Ini setelah berahasil register ${this.state.email}`)
@@ -271,7 +273,9 @@ class MovieDetails extends Component {
                     cookie: true
                 });
 
-            window.location.reload();
+            // window.location.reload();
+            window.location.replace('/paymentSuccess');
+
             // console.log(response);
             // window.location.reload()
             // console.log(`Ini setelah berhasil create reservation`)
@@ -281,7 +285,6 @@ class MovieDetails extends Component {
         });
     }
 
-    
     render() {
         //Show screening schedule in neat view
         const screeningDay =this.state.screeningSchedule.map((item, index)=>{
@@ -648,7 +651,7 @@ class MovieDetails extends Component {
 
 
                     {/* Modal */}
-                    <div class="modal fade" id="summary" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    {/* <div class="modal fade" id="summary" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">
                             <div class="modal-content">
                             <div class="modal-header">
@@ -663,12 +666,12 @@ class MovieDetails extends Component {
                                         <tr>
                                             <td>Movie Name</td>
                                             <td>: {this.state.movieTitle}</td>
-                                        </tr>
+                                        </tr> */}
                                         {/* <tr>
                                             <td>Schedule</td>
                                             <td>: {this.state.screeningSelected}</td>
                                         </tr> */}
-                                        <tr>
+                                        {/* <tr>
                                             <td>Theater</td>
                                             <td>: {this.state.theater}</td>
                                         </tr>
@@ -694,8 +697,8 @@ class MovieDetails extends Component {
                                 <br />
                                 <br />
 
-                                <Link to="/payment">                               
-                                    <button type="button" class="btn btn-warning">CHECK OUT</button>
+                                <Link to="/paymentsuccess">                               
+                                    <button type="button" class="btn btn-warning" onClick={()=>{this.createReservation()}}>CHECK OUT</button>
                                 </Link>
                             </div>
                             <div class="modal-footer">
@@ -703,7 +706,7 @@ class MovieDetails extends Component {
                             </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
                 );
         }
@@ -828,8 +831,8 @@ class MovieDetails extends Component {
                     <br />
 
                     <div className="mt-summary-booking">
+                    <h1>SUMMARY</h1>
                         <table>
-                            
                             <tr>
                                 <td>Seat(s) selected</td>
                                 <td>: {this.state.seat.toString()}</td>
@@ -902,4 +905,16 @@ class MovieDetails extends Component {
   }
 }
 
+// const mapStateToProps = (state) => {
+//     const email = state.email;
+//     const password = state.password;
+//     //testing akan menjadi nama props yang akan dipanggil di komponen ini
+//     //state adalah kumpulan state yang ada di index.js (di bagian export, liat deh)
+  
+//     return { email, password };
+//     //{ testing } itu artinya object {testing: testing}
+//   }
+
 export default MovieDetails;
+// export default connect(mapStateToProps)(MovieDetails);
+

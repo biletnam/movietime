@@ -19,4 +19,25 @@ export const movie3 = (parameterKu) => {
     };
 };
 
+export const cookie = (parameterKu) => {
+    return {
+        type: 'cookie',
+        payload: parameterKu
+    };
+};
+
+export const email = (parameterKu) => {
+    return {
+        type: 'gantiEmail',
+        payload: parameterKu
+    };
+};
+
+export const password = (parameterKu) => {
+    return {
+        type: 'gantiPassword',
+        payload: parameterKu
+    };
+};
+
 //hasil return dari action creator masuk ke semua reducers

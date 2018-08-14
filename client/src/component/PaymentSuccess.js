@@ -11,10 +11,10 @@ class Payment extends Component {
                   <br/><br/>
                   <h2 style={{color:"#0fad00"}}>Success</h2>
                   <img src={require('../img/movietimecom-transparent.png')} height='250px' width='250px'/>
-                  <h3>Dear, Faisal khan</h3>
-                  <p style={{fontsize:"20px", color:"#5C5C5C"}}>Thank you for verifying your Mobile No.We have sent you an email "faisalkhan.chat@gmail.com" with your details
-                    Please go to your above email now and login.</p>
-                  <a href="" class="btn btn-success">     View Ticket      </a>
+                  <h3>Your reservation is success</h3>
+                  {/* <p style={{fontsize:"20px", color:"#5C5C5C"}}>Thank you for verifying your Mobile No.We have sent you an email "faisalkhan.chat@gmail.com" with your details */}
+                    {/* Please go to your above email now and login.</p> */}
+                  {/* <a href="" class="btn btn-success">     View Ticket      </a> */}
                   <br/><br/>
                 </div>
           </div>

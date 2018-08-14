@@ -5,6 +5,35 @@ import '../style/Payment.css';
 import { Link } from 'react-router-dom';
 
 class Payment extends Component {
+    
+    // createRealReservation(){
+    //     console.log(`Ini di create reservation ${this.state.email}`)
+    //     let cookiePeramban = cookies.get('MOVIETIME_SESSID')
+    //     console.log(cookiePeramban)
+
+    //     var url = 'http://localhost:5001/createrealreservation';
+    //     axios.post(url, {
+    //         cookie: cookiePeramban,
+    //         screening: this.state.screeningSelected,
+    //         theater: this.state.theater,
+    //         seat: this.state.seat,
+    //     })
+    //     .then((response) => {
+    //         console.log(`Berhasil!`)
+    //             this.setState({
+    //                 cookie: true
+    //             });
+
+    //         window.location.reload();
+    //         // console.log(response);
+    //         // window.location.reload()
+    //         // console.log(`Ini setelah berhasil create reservation`)
+    //     })
+    //     .catch(function (error) {
+    //         console.log(error);
+    //     });
+    // }
+
   render() {
     return (
       <div className="Payment">
@@ -77,7 +106,7 @@ class Payment extends Component {
                                 <button type="reset" class="btn btn-default btn-lg btn-block">Cancel</button>
                             </div> */}
                             <div class="col-md-6">
-                            <Link to="/paymentsuccess"><button type="submit" class="btn btn-success btn-lg btn-block">Submit</button></Link>
+                            <Link to="/paymentsuccess"><button onClick={()=>{this.createRealReservation()}} type="submit" class="btn btn-success btn-lg btn-block">Submit</button></Link>
                             </div>
                         </div>
                     </form>

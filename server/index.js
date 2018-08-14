@@ -41,6 +41,31 @@ app.get('/seat/:id', (req, res) => {
     });
 })
 
+app.post('/register', (req, res) => {
+    // console.log(req.body)
+    let sql = 'INSERT INTO user SET ?';
+    let data = {email: req.body.email, password: req.body.password, passwordConfirm: req.body.passwordConfirm}
+    db.query(sql, data, (err, result) => {
+        if(err) throw err;
+        let sessionID = uuidv4()
+        let sql = `INSERT INTO session(session_id, user_id) VALUES ('${sessionID}',(select id from user where email='${req.body.email}'))`;
+        db.query(sql, (err, result) => {
+            if(err) throw err;
+            res.send({
+                kode: '001',
+                session_id : sessionID,
+            })
+        })
+
+        // console.log(result);
+        // res.send({
+        //     kode: '001',
+        //     status: 'Berhasil',
+		//     email: req.body.email,
+	// });
+    })
+})
+
 app.post('/login', (req, res, next) => {
   passport.authenticate('local', function(err, user, info) {
     console.log("Infooo:", info)
@@ -99,23 +124,10 @@ app.post('/login',
                                    failureFlash: true })
 );
 
-app.post('/register', (req, res) => {
-    // console.log(req.body)
-    let sql = 'INSERT INTO user SET ?';
-    let data = {email: req.body.email, password: req.body.password, passwordConfirm: req.body.passwordConfirm}
-    db.query(sql, data, (err, result) => {
-        if(err) throw err;
-        console.log(result);
-        res.send({
-            kode: '001',
-            status: 'Berhasil',
-		    email: req.body.email,
-	});
-    })
-})
+
 
 app.post('/createreservation', (req, res) => {
-    var sql1 = `insert into reservation values ( null, now(), '${req.body.screening}', (select id from user where email = '${req.body.email}' and password = '${req.body.password}'),0)`
+    var sql1 = `insert into reservation values ( null, now(), '${req.body.screening}', (select id from user where email = '${req.body.email}' and password = '${req.body.password}'),1)`
     db.query(sql1, (err, result) => {
         if (err) throw err;
 
@@ -130,6 +142,30 @@ app.post('/createreservation', (req, res) => {
 
         res.send({
             status: 'Dari backend: berhasil create reservation'
+        })
+
+    })
+})
+
+app.post('/createrealreservation', (req, res) => {
+    var sql1 = `insert into reservation values ( null, now(), '${req.body.screening}', (select id from user where email = '${req.body.email}' and password = '${req.body.password}'),1)`
+    var sql1 = `insert into reservation values ( null, now(), '${req.body.screening}', (select user_id from session where session_id = 'f4fb9dd1-4cb6-4b17-9b27-ba446a7ba28a';
+),1)`
+    
+    db.query(sql1, (err, result) => {
+        if (err) throw err;
+
+        for (let i=0; i<req.body.seat.length; i++){
+            var seat_id = `${req.body.theater}${req.body.seat[i]}`
+            var sql3 = `insert into seat_reserved values (null, '${seat_id}', ${result.insertId})`
+            console.log(sql3)
+            db.query(sql3, (err, result) => {
+                if (err) throw err;
+            })
+        }
+
+        res.send({
+            status: 'Dari backend: berhasil create real reservation'
         })
 
     })
