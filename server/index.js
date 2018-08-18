@@ -27,7 +27,7 @@ app.get('/movie/:id', (req, res) => {
 
     db.query(sql, (err, result) => {
         if (err) throw err;
-        console.log(result);
+        // console.log(result);
         res.send(result);
     });
 })
@@ -36,13 +36,12 @@ app.get('/seat/:id', (req, res) => {
     let sql = `select * from seat_reserved left join reservation on seat_reserved.reservation_id = reservation.id where screening_id = '${req.params.id}' and active = 1`;
     db.query(sql, (err, result) => {
         if (err) throw err;
-        console.log(result);
+        // console.log(result);
         res.send(result);
     });
 })
 
 app.post('/register', (req, res) => {
-    // console.log(req.body)
     let sql = 'INSERT INTO user SET ?';
     let data = {email: req.body.email, password: req.body.password, passwordConfirm: req.body.passwordConfirm}
     db.query(sql, data, (err, result) => {
@@ -56,20 +55,13 @@ app.post('/register', (req, res) => {
                 session_id : sessionID,
             })
         })
-
-        // console.log(result);
-        // res.send({
-        //     kode: '001',
-        //     status: 'Berhasil',
-		//     email: req.body.email,
-	// });
     })
 })
 
 app.post('/login', (req, res, next) => {
   passport.authenticate('local', function(err, user, info) {
-    console.log("Infooo:", info)
-    console.log("User:", user)
+    // console.log("Infooo:", info)
+    // console.log("User:", user)
     
     if (user.kode == '001') {
         // nyimpen sessionID di server
@@ -127,7 +119,9 @@ app.post('/login',
 
 
 app.post('/createreservation', (req, res) => {
-    var sql1 = `insert into reservation values ( null, now(), '${req.body.screening}', (select id from user where email = '${req.body.email}' and password = '${req.body.password}'),1)`
+    // var sql1 = `insert into reservation values ( null, now(), '${req.body.screening}', (select id from user where email = '${req.body.email}' and password = '${req.body.password}'),1)`
+    var sql1 = `insert into reservation values ( null, now(), '${req.body.screening}', (select user_id from session where session_id = '${req.body.cookie}'), 0)`
+   
     db.query(sql1, (err, result) => {
         if (err) throw err;
 
@@ -147,33 +141,8 @@ app.post('/createreservation', (req, res) => {
     })
 })
 
-app.post('/createrealreservation', (req, res) => {
-    var sql1 = `insert into reservation values ( null, now(), '${req.body.screening}', (select id from user where email = '${req.body.email}' and password = '${req.body.password}'),1)`
-    var sql1 = `insert into reservation values ( null, now(), '${req.body.screening}', (select user_id from session where session_id = 'f4fb9dd1-4cb6-4b17-9b27-ba446a7ba28a';
-),1)`
-    
-    db.query(sql1, (err, result) => {
-        if (err) throw err;
-
-        for (let i=0; i<req.body.seat.length; i++){
-            var seat_id = `${req.body.theater}${req.body.seat[i]}`
-            var sql3 = `insert into seat_reserved values (null, '${seat_id}', ${result.insertId})`
-            console.log(sql3)
-            db.query(sql3, (err, result) => {
-                if (err) throw err;
-            })
-        }
-
-        res.send({
-            status: 'Dari backend: berhasil create real reservation'
-        })
-
-    })
-})
-
 app.post('/cookie', (req, res) => {
-    console.log(`Ini req.body cookie: ${req.body.cookieMovietime}`)
-
+    // console.log(`Ini req.body cookie: ${req.body.cookieMovietime}`)
     let sql =  `select count(*) hitung from session where session_id = '${req.body.cookieMovietime}'`    
     db.query(sql, (err, result) => {
 
@@ -195,9 +164,8 @@ app.post('/cookie', (req, res) => {
 })
 
 app.post('/signout', (req, res) => {
-    console.log(req.body.cookieMovietime)
+    // console.log(req.body.cookieMovietime)
     let sql =  `delete from session where session_id = '${req.body.cookieMovietime}'`
-    // console.log(sql)
     db.query(sql, (err, result) => {
         if(err) throw err;
         console.log(result);
@@ -205,26 +173,6 @@ app.post('/signout', (req, res) => {
             kode: '001',
             status: 'Berhasil hapus session',
 	});
-    })
-})
-
-app.post('/adminlogin', (req, res) => {
-    let sql =  `select count(*) hitung from admin where username='${req.body.username}' and password='${req.body.password}';`
-    db.query(sql, (err, result) => {
-        if (result[0].hitung == 1){
-            console.log(`Berhasil`)
-            res.send({
-                kode: '001',
-                status: 'Admin berhasil login'
-            });
-
-        } else {
-            console.log(`Gagal`)
-            res.send({
-                kode: '002',
-                status: 'Admin gagal login'
-            });
-        }
     })
 })
 

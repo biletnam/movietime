@@ -72,17 +72,12 @@ class Header extends Component {
 
     //Function to login
     login(){
-        // console.log(this.refs.emaillogin.value)
-        // console.log(this.refs.passwordlogin.value)
-
         var url = 'http://localhost:5001/login';
         axios.post(url, {
           email: this.refs.emaillogin.value,
           password: this.refs.passwordlogin.value
         })
         .then((response) => {
-        //   console.log(response);
-        //   console.log(response.data.kode)
           if (response.data.kode == '001'){
             cookies.set('MOVIETIME_SESSID', response.data.session_id)
 
@@ -92,9 +87,6 @@ class Header extends Component {
                 cookie: true
             });
 
-            // this.props.email(this.refs.emaillogin.value);
-            // this.props.password(this.refs.passwordlogin.value);
-
             window.location.reload()
             console.log(`Berhasil login + session + cookie: ${this.state.cookie}`)
           }
@@ -103,6 +95,34 @@ class Header extends Component {
           console.log(error);
         });
     }
+
+    register(){
+        var url = 'http://localhost:5001/register';
+        axios.post(url, {
+          email: this.refs.emailregister.value,
+          password: this.refs.passwordregister.value,
+          passwordConfirm: this.refs.passwordregisterconfirm.value
+        })
+        .then((response) => {
+          console.log(`Ini response register: ${response.data}`);
+          if (response.data.kode == '001'){
+            cookies.set('MOVIETIME_SESSID', response.data.session_id)
+
+            this.setState({
+                email:this.refs.emailregister.value,
+                password:this.refs.passwordregister.value,
+                passwordconfirm:this.refs.passwordregisterconfirm.value,
+                cookie: true
+            });
+
+            window.location.reload()
+            console.log(`Ini setelah berahasil register ${this.state.email}`)
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
 
     signOut(){
         console.log(`Tes tombol logout jalan ga abis loghin`)
@@ -212,13 +232,13 @@ class Header extends Component {
                     </button>
                 </div>
                 <div class="modal-body">
-                    <input type='text' placeholder=' Email' ref="emailregister" />
+                    <input ref='emailregister' type='text' placeholder=' Email' ref="emailregister" />
                     <br />
                     <br />
-                    <input type='email' placeholder=' Password' ref="passwordregister" />
+                    <input ref='passwordregister' type='password' placeholder=' Password' ref="passwordregister" />
                     <br />
                     <br />
-                    <input type='email' placeholder=' Confirm Pasword' ref="passwordregisterconfirm" />
+                    <input ref='passwordregisterconfirm' type='password' placeholder=' Confirm Pasword' ref="passwordregisterconfirm" />
                     <br/>
                     <br/>
                     <button type="button" class="btn btn-primary" onClick={()=> {this.register();}}>SIGN UP</button>

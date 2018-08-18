@@ -69,13 +69,19 @@ class NowPlaying extends Component {
         })
     }
 
+
   render() {
+
     return (
       <div className="NOWPLAYING">
         <div className="mt-nowplaying-title">
             <h1 align="center">NOW PLAYING</h1>
         </div>
-
+        <center>
+            <input type='text' placeholder='Find Movie' ref='cari'/>
+            <button onClick={()=> {this.findMovie()}}>Find</button>
+        </center>
+        <br />
         <div className="card-deck">
             <div className="card">
                 <img className="card-img-top" src={this.state.moviePoster1} alt="Card image cap" /> 

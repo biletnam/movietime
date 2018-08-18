@@ -183,7 +183,7 @@ class MovieDetails extends Component {
             seatChoice.splice(indeksSeat, 1);
             this.setState({seat: seatChoice});
         } else {
-            console.log(`Ga ada nih, mesti nambah donk`)
+            // console.log(`Ga ada nih, mesti nambah donk`)
             this.setState({ 
                 seat: this.state.seat.concat(choice)
             })
@@ -205,7 +205,6 @@ class MovieDetails extends Component {
         })
         .then((response) => {
           console.log(response);
-        //   console.log(response.data.kode)
           if (response.data.kode == '001'){
             cookies.set('MOVIETIME_SESSID', response.data.session_id)
 
@@ -224,9 +223,6 @@ class MovieDetails extends Component {
 
     //Function to register
     register(){
-        // console.log(this.state.email)
-        // console.log(this.state.password)
-
         var url = 'http://localhost:5001/register';
         axios.post(url, {
           email: this.refs.emailregister.value,
@@ -258,9 +254,11 @@ class MovieDetails extends Component {
     // Function to create reservation
     createReservation() {
         console.log(`Ini di create reservation ${this.state.email}`)
+        let cookiePeramban = cookies.get('MOVIETIME_SESSID')        
 
         var url = 'http://localhost:5001/createreservation';
         axios.post(url, {
+            cookie: cookiePeramban,
             email: this.state.email,
             password: this.state.password,
             screening: this.state.screeningSelected,
@@ -273,7 +271,7 @@ class MovieDetails extends Component {
                     cookie: true
                 });
 
-            // window.location.reload();
+            window.location.reload();
             window.location.replace('/paymentSuccess');
 
             // console.log(response);
@@ -643,9 +641,14 @@ class MovieDetails extends Component {
                             </div>
                             <br />
 
-                            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#summary" data-backdrop='false'>
+                            {/* <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#summary" data-backdrop='false'>
+                                BUY TICKET
+                            </button> */}
+
+                            <button type="button" class="btn btn-warning" onClick={()=> {this.createReservation();}}>
                                 BUY TICKET
                             </button>
+
                         </div>
                     </div>
 
@@ -873,10 +876,10 @@ class MovieDetails extends Component {
                 </div>
                 <div class="modal-body">
                     <p>Please login to continue</p>
-                    <input type='text' placeholder=' Email' ref="emaillogin" value="andi@yahoo.com" />
+                    <input type='text' placeholder=' Email' ref="emaillogin" />
                     <br />
                     <br />
-                    <input type='email' placeholder=' Password' ref="passwordlogin" value="andi1234" />
+                    <input type='password' placeholder=' Password' ref="passwordlogin" />
                     <br/>
                     <br/>
                     <button type="button" class="btn btn-primary" onClick={()=> {this.login();}}>LOG IN</button>
@@ -886,10 +889,10 @@ class MovieDetails extends Component {
                     <input type='text' placeholder=' Email' ref="emailregister" />
                     <br />
                     <br />
-                    <input type='email' placeholder=' Password' ref="passwordregister" />
+                    <input type='password' placeholder=' Password' ref="passwordregister" />
                     <br />
                     <br />
-                    <input type='email' placeholder=' Confirm Pasword' ref="passwordregisterconfirm" />
+                    <input type='password' placeholder=' Confirm Pasword' ref="passwordregisterconfirm" />
                     <br/>
                     <br/>
                     <button type="button" class="btn btn-primary" onClick={()=> {this.register();}}>SIGN UP</button>
