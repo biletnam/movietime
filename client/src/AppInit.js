@@ -8,12 +8,12 @@ import { Route, withRouter } from 'react-router-dom';
 import Header from './component/Header';
 import Home from './component/Home';
 import Footer from './component/Footer';
-import PaymentSuccess from './component/PaymentSuccess'
-import Admin from './component/Admin';
 
 // Component for Routes
 import MovieDetails from './component/MovieDetails';
+import Summary from './component/Summary';
 import Payment from './component/Payment';
+import PaymentSuccess from './component/PaymentSuccess'
 
 class AppInit extends Component {
   render() {
@@ -22,8 +22,10 @@ class AppInit extends Component {
         <Header />
           <Route exact path="/" component={Home} />
           <Route path="/movie/:id" component={MovieDetails} />
+          <Route path="/summary" component={Summary} />                  
           <Route path="/payment" component={Payment} />
-          <Route path="/paymentsuccess" component={PaymentSuccess} />        
+          <Route path="/paymentsuccess" component={PaymentSuccess} />
+                  
         <Footer />
       </div>
     );

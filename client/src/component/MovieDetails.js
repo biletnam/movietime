@@ -25,6 +25,8 @@ class MovieDetails extends Component {
             screeningSelected: '', // state to store screening selected
             theater: '',
             seat: [], // state to store selected seats by user
+            price: '-',
+            total_price: '-',
 
             uncheckA1: false, // state to uncheck the booked seat
             uncheckA2: false,
@@ -165,7 +167,15 @@ class MovieDetails extends Component {
             this.setState({
                 theater: ambilTheater,
             })
-        })  
+        })
+        
+        // For take price
+        axios.get(`http://localhost:5001/price/${screening_id}`)
+        .then((ambilData) => {
+            this.setState({
+                price: ambilData.data[0].price, 
+            })
+        })
     };
 
     //Function to add & remove seat selected to/from state
@@ -192,8 +202,8 @@ class MovieDetails extends Component {
     
     //Function to calculate total price
     totalPrice(){
-        let total = (parseInt(this.state.seat.length) * 40000);
-        return total;
+        let total_price = (parseInt(this.state.seat.length) * (parseInt(this.state.price)));
+        return total_price;
     };
 
     //Function to login
@@ -253,16 +263,16 @@ class MovieDetails extends Component {
 
     // Function to create reservation
     createReservation() {
-        console.log(`Ini di create reservation ${this.state.email}`)
         let cookiePeramban = cookies.get('MOVIETIME_SESSID')        
 
         var url = 'http://localhost:5001/createreservation';
         axios.post(url, {
             cookie: cookiePeramban,
-            email: this.state.email,
-            password: this.state.password,
             screening: this.state.screeningSelected,
             theater: this.state.theater,
+            total_seats: (this.state.seat).length,
+            price: this.state.price,
+            total_price: this.totalPrice(),
             seat: this.state.seat,
         })
         .then((response) => {
@@ -272,11 +282,8 @@ class MovieDetails extends Component {
                 });
 
             window.location.reload();
-            window.location.replace('/paymentSuccess');
+            window.location.replace('/summary');
 
-            // console.log(response);
-            // window.location.reload()
-            // console.log(`Ini setelah berhasil create reservation`)
         })
         .catch(function (error) {
             console.log(error);
@@ -341,161 +348,6 @@ class MovieDetails extends Component {
 
             return <option value={item.id} key={index}>{day}, {date_time_date} {date_time_month} {date_time_year} pk. {date_time_hour}:0{date_time_minute}</option>
         })
-
-        // Tes cek cookie (tidak dipakai)
-        if (cookies.get('MOVIETIME_SESSID') != undefined) {
-            // return (
-            //     <div className="MOVIEDETAILS">
-            //         <div className="mt-moviedetails-movie">
-            //             <div className="mt-moviedetails-movie-image">
-            //                 <img className="" src={this.state.moviePoster} height="500px" alt="" /> 
-            //             </div>
-        
-            //             <div className="mt-moviedetails-movie-description">
-            //                 <h1>{this.state.movieTitle}</h1>
-            //                 <br />
-            //                 <p><strong>Synopsis<button onClick={()=> checkCookie()}>Coba</button></strong></p>
-            //                 <p>{this.state.movieOverview}</p>
-                           
-            //                 <h2>Choose your schedule</h2>
-            //                 <div className="mt-moviedetails-schedule">
-            //                     <select  onChange={(e) => this.klik(e.target.value)} className="custom-select">
-            //                         <option selected>Day</option>
-            //                         { screeningDay }
-            //                     </select>
-            //                     <br />
-            //                 </div>
-            //                 <br />
-            //                 <h2>Choose your seats</h2>
-            //                 <div className="mt-moviedetails-seats ">
-            //                     <div className="kotak-A">A</div>
-            //                     <div className="kotak-A1">
-            //                         <input type='checkbox' disabled={this.state.uncheckA1} onClick={()=>{this.seat('A1');}} />
-            //                         1
-            //                     </div>
-            //                     <div className="kotak-A2">
-            //                         <input type='checkbox' disabled={this.state.uncheckA2} onClick={()=>{this.seat('A2');}}  />
-            //                         2
-            //                     </div>
-            //                     <div className="kotak-A3">
-            //                         <input type='checkbox' disabled={this.state.uncheckA3} onClick={()=>{this.seat('A3');}} />
-            //                         3
-            //                     </div>
-            //                     <div className="kotak-A4">
-            //                         <input type='checkbox' disabled={this.state.uncheckA4} onClick={()=>{this.seat('A4');}} />
-            //                         4
-            //                     </div>
-            //                     <div className="kotak-A5">
-            //                         <input type='checkbox' disabled={this.state.uncheckA5} onClick={()=>{this.seat('A5');}} />
-            //                         5
-            //                     </div>
-            //                     <div className="kotak-B">B</div>
-            //                     <div className="kotak-B1">
-            //                         <input type='checkbox' disabled={this.state.uncheckB1} onClick={()=>{this.seat('B1');}} />
-            //                         1
-            //                     </div>
-            //                     <div className="kotak-B2">
-            //                         <input type='checkbox' disabled={this.state.uncheckB2} onClick={()=>{this.seat('B2');}} />
-            //                         2
-            //                     </div>
-            //                     <div className="kotak-B3">
-            //                         <input type='checkbox' disabled={this.state.uncheckB3} onClick={()=>{this.seat('B3');}} />
-            //                         3
-            //                     </div>
-            //                     <div className="kotak-B4">
-            //                         <input type='checkbox' disabled={this.state.uncheckB4} onClick={()=>{this.seat('B4');}} />
-            //                         4
-            //                     </div>
-            //                     <div className="kotak-B5">
-            //                         <input type='checkbox' disabled={this.state.uncheckB5} onClick={()=>{this.seat('B5');}} />
-            //                         5
-            //                     </div>
-            //                     <div className="kotak-C">C</div>
-            //                     <div className="kotak-C1">
-            //                         <input type='checkbox' disabled={this.state.uncheckC1} onClick={()=>{this.seat('C1');}} />
-            //                         1
-            //                     </div>
-            //                     <div className="kotak-C2">
-            //                         <input type='checkbox' disabled={this.state.uncheckC2} onClick={()=>{this.seat('C2');}} />
-            //                         2
-            //                     </div>
-            //                     <div className="kotak-C3">
-            //                         <input type='checkbox' disabled={this.state.uncheckC3} onClick={()=>{this.seat('C3');}} />
-            //                         3
-            //                     </div>
-            //                     <div className="kotak-C4">
-            //                         <input type='checkbox' disabled={this.state.uncheckC4} onClick={()=>{this.seat('C4');}} />
-            //                         4
-            //                     </div>
-            //                     <div className="kotak-C5">
-            //                         <input type='checkbox' disabled={this.state.uncheckC5} onClick={()=>{this.seat('C5');}} />
-            //                         5
-            //                     </div>
-            //                     <div className="kotak-D">D</div>
-            //                     <div className="kotak-D1">
-            //                         <input type='checkbox' disabled={this.state.uncheckD1} onClick={()=>{this.seat('D1');}} />
-            //                         1
-            //                     </div>
-            //                     <div className="kotak-D2">
-            //                         <input type='checkbox' disabled={this.state.uncheckD2} onClick={()=>{this.seat('D2');}} />
-            //                         2
-            //                     </div>
-            //                     <div className="kotak-D3">
-            //                         <input type='checkbox' disabled={this.state.uncheckD3} onClick={()=>{this.seat('D3');}} />
-            //                         3
-            //                     </div>
-            //                     <div className="kotak-D4">
-            //                         <input type='checkbox' disabled={this.state.uncheckD4} onClick={()=>{this.seat('D4');}} />
-            //                         4
-            //                     </div>
-            //                     <div className="kotak-D5">
-            //                         <input type='checkbox' disabled={this.state.uncheckD5} onClick={()=>{this.seat('D5');}} />
-            //                         5
-            //                     </div>
-            //                 </div>
-            //                 <br />
-                            
-            //                 <center>
-            //                     <div className="mt-moviedetails-seats-screen">
-            //                         <p align="center">SCREEN</p>
-            //                     </div>
-            //                 </center>
-            //                 <br />
-            //                 <br />
-        
-            //                 <div className="mt-summary-booking">
-            //                     <table>
-                                    
-            //                         <tr>
-            //                             <td>Seat(s) selected</td>
-            //                             <td>: {this.state.seat.toString()}</td>
-            //                         </tr>
-            //                         <tr>
-            //                             <td>Total Seats</td>
-            //                             <td>: {this.state.seat.length}</td>
-            //                         </tr>
-            //                         <tr>
-            //                             <td>Price per Ticket</td>
-            //                             <td>: Rp 40.000</td>
-            //                         </tr>
-            //                         <tr>
-            //                             <td><strong>TOTAL</strong></td>
-            //                             <td><strong>: Rp {this.totalPrice()}</strong></td>
-            //                         </tr>
-            //                     </table>
-            //                 </div>
-            //                 <br />
-            //                 {/* <Link to="/login"><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>                 */}
-            //                 {/* Button trigger modal */}
-                            
-            //                 <button type="button" class="btn btn-warning">
-            //                 BUY TICKET
-            //                 </button>
-            //             </div>
-            //         </div>
-            //     </div>
-            //     );
-        }
 
         // Cek cookie
         if (this.state.cookie == true){
@@ -631,7 +483,7 @@ class MovieDetails extends Component {
                                     </tr>
                                     <tr>
                                         <td>Price per Ticket</td>
-                                        <td>: Rp 40.000</td>
+                                        <td>: Rp {this.state.price}</td>
                                     </tr>
                                     <tr>
                                         <td><strong>TOTAL</strong></td>
@@ -651,65 +503,6 @@ class MovieDetails extends Component {
 
                         </div>
                     </div>
-
-
-                    {/* Modal */}
-                    {/* <div class="modal fade" id="summary" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalCenterTitle">SUMMARY</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <td>Movie Name</td>
-                                            <td>: {this.state.movieTitle}</td>
-                                        </tr> */}
-                                        {/* <tr>
-                                            <td>Schedule</td>
-                                            <td>: {this.state.screeningSelected}</td>
-                                        </tr> */}
-                                        {/* <tr>
-                                            <td>Theater</td>
-                                            <td>: {this.state.theater}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Seat(s) selected</td>
-                                            <td>: {this.state.seat.toString()}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Total Seats</td>
-                                            <td>: {this.state.seat.length}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Price per Ticket</td>
-                                            <td>: Rp 40.000</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>TOTAL</strong></td>
-                                            <td><strong>: Rp {this.totalPrice()}</strong></td>
-                                        </tr>
-                                        
-                                    </tbody>
-                                </table>
-                                <br />
-                                <br />
-
-                                <Link to="/paymentsuccess">                               
-                                    <button type="button" class="btn btn-warning" onClick={()=>{this.createReservation()}}>CHECK OUT</button>
-                                </Link>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            </div>
-                            </div>
-                        </div>
-                    </div> */}
                 </div>
                 );
         }
@@ -846,7 +639,7 @@ class MovieDetails extends Component {
                             </tr>
                             <tr>
                                 <td>Price per Ticket</td>
-                                <td>: Rp 40.000</td>
+                                <td>: Rp {this.state.price}</td>
                             </tr>
                             <tr>
                                 <td><strong>TOTAL</strong></td>
