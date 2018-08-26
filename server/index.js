@@ -22,6 +22,47 @@ const db = mysql.createConnection({
 });
 db.connect();
 
+app.get('/latestmovies', (req, res) => {
+    let sql = `SELECT * FROM ( SELECT * FROM movie ORDER BY id DESC LIMIT 3 ) as latest_movie ORDER BY id`;
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+})
+
+app.get('/allmovies', (req, res) => {
+    let sql = `SELECT * FROM movie`;
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+})
+
+app.post('/updatemovies', (req, res) => {
+    let sql = `update movie set poster = '${req.body.poster}', backdrop = '${req.body.backdrop}' where moviedb_id = ${req.body.id}`;
+    db.query(sql, (err, result) => {
+        if(err) throw err;
+        res.send({
+            status: 'Berhasil memperbaharui movie',
+            moviedb_id: req.body.id,
+            poster: req.body.poster,
+            backdrop: req.body.backdrop,
+        })
+    })
+})
+
+app.post('/updatetagline', (req, res) => {
+    let sql = `update movie set tagline = "${req.body.tagline}", overview = "${req.body.overview}" where moviedb_id = ${req.body.id}`;
+    db.query(sql, (err, result) => {
+        if(err) throw err;
+        res.send({
+            status: 'Berhasil memperbaharui movie',
+            tagline: req.body.tagline,
+            overview: req.body.overview,
+        })
+    })
+})
+
 app.get('/movie/:id', (req, res) => {
     let sql = `select * from  movie inner join screening on movie.id = screening.movie_id where movie_id = (select id from movie where moviedb_id = ${req.params.id})`;
     db.query(sql, (err, result) => {
@@ -202,6 +243,71 @@ app.post('/createfinalreservation', (req, res) => {
     });
 })
 
+app.post('/paymentsuccess', (req, res) => {
+    let sql = `select email from user where id = (select user_id from session where session_id = '${req.body.cookie}');`;
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+})
+
+app.post('/profile', (req, res) => {
+    let sql = `select email from user where id = (select user_id from session where session_id = '${req.body.cookie}');`;
+
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+})
+
+app.post('/changeemail', (req, res) => {
+    let sql = `update user set email='${req.body.email}' where id=(select user_id from session where session_id='${req.body.cookie}')`;
+
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+})
+
+app.post('/changepassword', (req, res) => {
+    let sql = `update user set password='${req.body.password}', passwordConfirm='${req.body.passwordConfirm}' where id=(select user_id from session where session_id='${req.body.cookie}')`;
+
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+})
+
+app.post('/myreservation', (req, res) => {
+    let sql = `select * from reservation where user_id = (select user_id from session where session_id='${req.body.cookie}') and active = 1`;
+
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+})
+
+app.post('/summaryprofile', (req, res) => {
+    let sql = 
+    `select reservation.id, 
+            movie.movie_name, 
+            screening.day, 
+            screening.date_time, 
+            theater.theater_name, 
+            reservation.total_seats, 
+            reservation.seat, 
+            reservation.total_price 
+    from screening 
+                    join reservation on reservation.screening_id = screening.id 
+                    join movie on screening.movie_id = movie.id 
+                    join theater on screening.theater_id = theater.id 
+    where reservation.user_id = (select user_id from session where session_id = '${req.body.cookie}') and reservation.active = 1`;
+
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+})
 
 app.listen(5001, () => {
     console.log(`Listening to port 5001`)

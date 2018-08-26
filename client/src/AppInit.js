@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './AppInit.css';
 
 // Modules
-import { Route, withRouter } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 
 // Components
 import Header from './component/Header';
@@ -14,6 +14,7 @@ import MovieDetails from './component/MovieDetails';
 import Summary from './component/Summary';
 import Payment from './component/Payment';
 import PaymentSuccess from './component/PaymentSuccess'
+import Profile from './component/Profile';
 
 class AppInit extends Component {
   render() {
@@ -25,7 +26,7 @@ class AppInit extends Component {
           <Route path="/summary" component={Summary} />                  
           <Route path="/payment" component={Payment} />
           <Route path="/paymentsuccess" component={PaymentSuccess} />
-                  
+          <Route path="/profile" component={Profile} />                  
         <Footer />
       </div>
     );
