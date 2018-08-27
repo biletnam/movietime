@@ -10,3 +10,10 @@
     font-weight: bold;
     font-family: 'Open Sans', sans-serif;
 }
+
+.filterandsearch{
+    display:grid;
+    grid-template-columns:50% 50%;
+    max-width: 1000px;
+    margin: 0 auto;
+}

@@ -4,7 +4,9 @@ import '../style/MovieDetails.css'
 // Modules
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-// import { connect } from 'react-redux';
+
+//REDUX
+import { connect } from 'react-redux';
 
 //Cookies
 import Cookies from 'universal-cookie';
@@ -14,21 +16,37 @@ class MovieDetails extends Component {
     constructor() {
         super();
         this.state = {
+            //Untuk menyimpan moviedb_id movie yang dipilih
+            movieSelected: '',
+
+            //Untuk menyimpan cookie (true/false)
             cookie: '',
-            movie: '',
+
+            //Untuk filter
+            cityMovies: [],
+            providerMovies: [],
+            cinemaMovies: [],
+            chooseCity: 'Choose City',
+            chooseProvider: 'Choose Provider',
+            chooseCinema: 'Choose Cinema',
+
+            //Untuk konten movie
             moviePoster: '',
             movieTitle: '',
             movieOverview: '',
 
-            movieSelected: '', // state to store movie selected
+            //Screening
             screeningSchedule: [], // state to store available screening schedule from database
             screeningSelected: '', // state to store screening selected
-            theater: '',
+
+            //Reservation
             seat: [], // state to store selected seats by user
+            theater: '',
             price: '-',
             total_price: '-',
 
-            uncheckA1: false, // state to uncheck the booked seat
+            // state to uncheck the booked seat
+            uncheckA1: false,
             uncheckA2: false,
             uncheckA3: false,
             uncheckA4: false,
@@ -48,16 +66,21 @@ class MovieDetails extends Component {
             uncheckD3: false,
             uncheckD4: false,
             uncheckD5: false,
+
+            //LOGIN & REGISTRATION
             email: '',
             password: '',
             emailregister: '',
             passwordregister: '',
             passwordregisterconfirm: '',
+
+            
+
         };
         this.klik = this.klik.bind(this);
     };
 
-    //Get movie id & check cookies
+    //Get movie id, city, & check cookies
     componentWillMount() {
 
         //Get movie id 
@@ -74,8 +97,8 @@ class MovieDetails extends Component {
             cookieMovietime: cookiePeramban,
         })
         .then((response) => {
-            console.log(response);
-            console.log(response.data.kode)
+            // console.log(response);
+            // console.log(response.data.kode)
             if (response.data.kode == '001'){
                 this.setState({
                     cookie: true,
@@ -92,7 +115,7 @@ class MovieDetails extends Component {
         });
     }
 
-    //Get moviedb API & screening schedule
+    //Get moviedb API & window scroll to
     componentDidMount() {
 
         //Get moviedb.org content
@@ -110,19 +133,142 @@ class MovieDetails extends Component {
             })
         })
 
-        //Get screening schedule
-        axios.get(`http://localhost:5001/movie/${this.state.movieSelected}`)
-        .then((takeData) => {          
-          this.setState({
-            screeningSchedule: takeData.data,
-          })            
+        //Ambil daftar kota
+        var url = 'http://localhost:5001/citymd';
+        console.log(this.state.movieSelected)
+        axios.post(url, {
+            moviedb_id: this.state.movieSelected,
         })
-        
+        .then((response) => {
+            // console.log(response)
+            this.setState({
+                cityMovies: response.data,
+            })
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+
+        // Cek apakah ada global state untuk filter dari home
+        this.cekRedux()
+
         // Supaya halaman mulai dari atas
         window.scrollTo(0, 0)        
     };
 
-    // To disabled checkbox which booked
+    cekRedux(){
+        this.providerFilter(this.props.city)
+        this.cinemaFilter(this.props.provider)
+        this.screeningFilter(this.props.cinema)
+    }
+
+    //Untuk mengambil daftar provider dari movie & kota yang dipilih
+    providerFilter(city){
+        //Ganti state chooseCity
+        this.setState({
+            chooseCity: city,
+            chooseProvider: 'Choose Provider',
+            chooseCinema: 'Choose Cinema',
+        })
+
+        //Ambil daftar provider dari kota yang dipilih
+        let cityUser = city;
+        var url = 'http://localhost:5001/providermd';
+        // console.log(cityUser)
+        axios.post(url, {
+            moviedb_id: this.state.movieSelected,
+            city: cityUser,
+        })
+        .then((response) => {
+            // console.log(response)
+            this.setState({
+                providerMovies: response.data,
+            })
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+
+    //Untuk mengambil daftar cinema dari movie, kota & provider yang dipilih
+    cinemaFilter(provider){
+        //Ganti state chooseCity
+        this.setState({
+            chooseProvider: provider,
+            chooseCinema : 'Choose Cinema',
+        })
+
+        //Ambil daftar cinema dari kota & provider yang dipilih
+        let providerUser = provider;
+        var url = 'http://localhost:5001/cinemamd';
+        // console.log(this.state.chooseCity)
+        // console.log(providerUser)
+        axios.post(url, {
+            moviedb_id: this.state.movieSelected,
+            city: this.state.chooseCity,
+            provider: providerUser
+        })
+        .then((response) => {
+            // console.log(response)
+            this.setState({
+                cinemaMovies: response.data,
+            })
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+
+    //Untuk mengambil daftar screening dari movie & cinema yang dipilih
+    screeningFilter(cinema){
+        //Ganti state chooseCity
+        this.setState({
+            chooseCinema: cinema,
+        })
+
+        // //Get screening schedule (lama)
+        // axios.get(`http://localhost:5001/movie/${this.state.movieSelected}`)
+        // .then((response) => {          
+        //   this.setState({
+        //     screeningSchedule: response.data,
+        //   })            
+        // })
+
+        let cinemaUser = cinema;
+
+        //Ambil daftar movie dari cinema yang dipilih
+        var url = 'http://localhost:5001/screening';
+        // console.log(this.state.movieSelected)
+        // console.log(cinemaUser)
+
+        axios.post(url, {
+            moviedb_id: this.state.movieSelected,
+            cinema: cinemaUser,
+        })
+        .then((response) => {
+            // console.log(response)
+            this.setState({
+                screeningSchedule: response.data,
+            })
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+
+    //Untuk menghapus semua pilihan filter
+    clearFilter(){
+        this.setState({
+            providerMovies: [],
+            cinemaMovies: [],
+            chooseCity: 'Choose City',
+            chooseProvider: 'Choose Provider',
+            chooseCinema: 'Choose Cinema',
+        })
+        window.location.reload()
+    }
+
+    // To disabled checkbox which booked + get theater_id and price
     klik(screening_id){
         // To get all the checkbox available to check again when user change schedule + erase post action
         this.setState({
@@ -148,7 +294,7 @@ class MovieDetails extends Component {
             uncheckD5: false,
             screeningSelected: screening_id,
         })
-
+        console.log(screening_id)
         axios.get(`http://localhost:5001/seat/${screening_id}`)
         .then((ambilData) => {
             // For uncheck seat that have been booked (change the state)
@@ -160,19 +306,13 @@ class MovieDetails extends Component {
                     [seatId_potong2]: true, // [seatId_potong2] adalah dynamic key, bisa dilihat di https://stackoverflow.com/questions/46771248/react-setstate-with-dynamic-key
                 })
             })
-            
-            // For take theater
-            let ambilTheater = (ambilData.data[0].seat_id).substr(0,5) 
-            console.log(ambilTheater)
-            this.setState({
-                theater: ambilTheater,
-            })
         })
         
-        // For take price
+        // For take theater & price
         axios.get(`http://localhost:5001/price/${screening_id}`)
         .then((ambilData) => {
             this.setState({
+                theater: ambilData.data[0].theater_id, 
                 price: ambilData.data[0].price, 
             })
         })
@@ -180,6 +320,9 @@ class MovieDetails extends Component {
 
     //Function to add & remove seat selected to/from state
     seat(choice){
+        // console.log(this.state.theater);
+        // console.log(this.state.price);
+
         let seatChoice = this.state.seat;
         let indeksSeat = '';
 
@@ -291,6 +434,27 @@ class MovieDetails extends Component {
     }
 
     render() {
+        //Untuk mencetak daftar kota
+        const city = this.state.cityMovies.map((item, index)=>{
+            return ( 
+                <button onClick={()=>{this.providerFilter(item.city)}} class="dropdown-item" type="button">{item.city}</button>
+            );
+        })
+
+        //Untuk mencetak daftar provider
+        const provider = this.state.providerMovies.map((item, index)=>{
+            return ( 
+                <button onClick={()=>{this.cinemaFilter(item.provider)}} class="dropdown-item" type="button">{item.provider}</button>
+            );
+        })
+
+        //Untuk mencetak daftar cinema
+        const cinema = this.state.cinemaMovies.map((item, index)=>{
+            return ( 
+                <button onClick={()=>{this.screeningFilter(item.name)}} class="dropdown-item" type="button">{item.name}</button>
+            );
+        })
+
         //Show screening schedule in neat view
         const screeningDay =this.state.screeningSchedule.map((item, index)=>{
 
@@ -349,7 +513,7 @@ class MovieDetails extends Component {
             return <option value={item.id} key={index}>{day}, {date_time_date} {date_time_month} {date_time_year} pk. {date_time_hour}:0{date_time_minute}</option>
         })
 
-        // Cek cookie
+        // Untuk memunculkan tampilan jika sudah login
         if (this.state.cookie == true){
             return (
                 <div className="MOVIEDETAILS">
@@ -493,10 +657,6 @@ class MovieDetails extends Component {
                             </div>
                             <br />
 
-                            {/* <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#summary" data-backdrop='false'>
-                                BUY TICKET
-                            </button> */}
-
                             <button type="button" class="btn btn-warning" onClick={()=> {this.createReservation();}}>
                                 BUY TICKET
                             </button>
@@ -519,7 +679,51 @@ class MovieDetails extends Component {
                     <br />
                     <p><strong>Synopsis</strong></p>
                     <p>{this.state.movieOverview}</p>
+                    <br />
                    
+                    <h2>Choose your cinema</h2>
+                    <div className="filter">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                {this.state.chooseCity}
+                                            </button>
+                                            <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                                {city}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                {this.state.chooseProvider}
+                                            </button>
+                                            <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                                {provider}
+                                            </div>
+                                        </div>
+                                    </td>   
+                                    <td>
+                                        <div class="dropdown">
+                                            <button class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                {this.state.chooseCinema}                                    
+                                            </button>
+                                            <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                                {cinema}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><a onClick={() => {this.clearFilter()}}><u>clear</u></a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                            
+                        </div>
+                    <br />
+
                     <h2>Choose your schedule</h2>
                     <div className="mt-moviedetails-schedule">
                         <select  onChange={(e) => this.klik(e.target.value)} className="custom-select">
@@ -529,6 +733,7 @@ class MovieDetails extends Component {
                         <br />
                     </div>
                     <br />
+
                     <h2>Choose your seats</h2>
                     <div className="mt-moviedetails-seats ">
                         <div className="kotak-A">A</div>
@@ -648,8 +853,6 @@ class MovieDetails extends Component {
                         </table>
                     </div>
                     <br />
-                    {/* <Link to="/login"><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">BUY TICKET</button></Link>                 */}
-                    {/* Button trigger modal */}
 
                     <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#exampleModalCenter">
                     BUY TICKET
@@ -701,16 +904,13 @@ class MovieDetails extends Component {
   }
 }
 
-// const mapStateToProps = (state) => {
-//     const email = state.email;
-//     const password = state.password;
-//     //testing akan menjadi nama props yang akan dipanggil di komponen ini
-//     //state adalah kumpulan state yang ada di index.js (di bagian export, liat deh)
-  
-//     return { email, password };
-//     //{ testing } itu artinya object {testing: testing}
-//   }
+const mapStateToProps = (state) => {
+    const city = state.city;
+    const provider = state.provider;
+    const cinema = state.cinema;
 
-export default MovieDetails;
-// export default connect(mapStateToProps)(MovieDetails);
+    return { city, provider, cinema };
+  }
+
+export default connect(mapStateToProps)(MovieDetails);
 

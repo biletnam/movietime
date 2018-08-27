@@ -22,6 +22,7 @@ const db = mysql.createConnection({
 });
 db.connect();
 
+//Untuk mendapatkan 3 film terakhir (untuk dipasang di slider)
 app.get('/latestmovies', (req, res) => {
     let sql = `SELECT * FROM ( SELECT * FROM movie ORDER BY id DESC LIMIT 3 ) as latest_movie ORDER BY id`;
     db.query(sql, (err, result) => {
@@ -30,6 +31,7 @@ app.get('/latestmovies', (req, res) => {
     });
 })
 
+//Untuk mendapatkan semua daftar film
 app.get('/allmovies', (req, res) => {
     let sql = `SELECT * FROM movie`;
     db.query(sql, (err, result) => {
@@ -38,6 +40,7 @@ app.get('/allmovies', (req, res) => {
     });
 })
 
+//Untuk memperbaharui data film (poster & backdrop)
 app.post('/updatemovies', (req, res) => {
     let sql = `update movie set poster = '${req.body.poster}', backdrop = '${req.body.backdrop}' where moviedb_id = ${req.body.id}`;
     db.query(sql, (err, result) => {
@@ -51,6 +54,7 @@ app.post('/updatemovies', (req, res) => {
     })
 })
 
+//Untuk memperbaharui data film (tagline & overview)
 app.post('/updatetagline', (req, res) => {
     let sql = `update movie set tagline = "${req.body.tagline}", overview = "${req.body.overview}" where moviedb_id = ${req.body.id}`;
     db.query(sql, (err, result) => {
@@ -63,6 +67,106 @@ app.post('/updatetagline', (req, res) => {
     })
 })
 
+//HOME FILTER - Untuk mendapatkan daftar KOTA yang ada
+app.get('/city', (req, res) => {
+    let sql = `select distinct city from cinema`;
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+})
+
+//HOME FILTER - Untuk mendapatkan daftar PROVIDER berdasarkan kota yang diplih
+app.post('/provider', (req, res) => {
+    let sql = `select distinct provider from cinema where city = '${req.body.city}'`;
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+})
+
+//HOME FILTER - Untuk mendapatkan daftar CINEMA berdasarkan kota & provider yang diplih
+app.post('/cinema', (req, res) => {
+    let sql = `select name from cinema where city = '${req.body.city}' and provider = '${req.body.provider}'`;
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+})
+
+//HOME FILTER - Untuk mendapatkan daftar MOVIES berdasarkan cinema yang diplih
+app.post('/movies', (req, res) => {
+    let sql = `select distinct movie.* from movie join screening on movie.id = screening.movie_id where screening.cinema_id = (select id from cinema where name = '${req.body.cinema}')`;
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+})
+
+//HOME SEARCH - Untuk mendapatkan daftar MOVIES berdasarkan kata kunci
+app.post('/search', (req, res) => {
+    let sql = `select * from movie where movie_name like '%${req.body.keyword}%'`;
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+})
+
+//MOVIE DETAILS FILTER - Untuk mendapatkan daftar KOTA yang ada
+app.post('/citymd', (req, res) => {
+    let sql = `select distinct cinema.city from screening
+                    join movie on screening.movie_id = movie.id
+                    join cinema on screening.cinema_id = cinema.id
+                    where movie.moviedb_id = ${req.body.moviedb_id}`
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+})
+
+//MOVIE DETAILS FILTER - Untuk mendapatkan daftar PROVIDER berdasarkan kota yang diplih
+app.post('/providermd', (req, res) => {
+    let sql = `select distinct cinema.provider from screening
+                    join movie on screening.movie_id = movie.id
+                    join cinema on screening.cinema_id = cinema.id
+                    where movie.moviedb_id = ${req.body.moviedb_id}
+                    and
+                    cinema.city = '${req.body.city}'`
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+})
+
+//MOVIE DETAILS FILTER - Untuk mendapatkan daftar CINEMA berdasarkan kota & provider yang diplih
+app.post('/cinemamd', (req, res) => {
+    let sql = `select distinct cinema.name from screening
+                    join movie on screening.movie_id = movie.id
+                    join cinema on screening.cinema_id = cinema.id
+                    where movie.moviedb_id = ${req.body.moviedb_id}
+                    and
+                    cinema.city = '${req.body.city}'
+                    and cinema.provider = '${req.body.provider}'`
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+})
+
+//Untuk mengambil daftar screening
+app.post('/screening', (req, res) => {
+    let sql = `select screening.* from screening 
+                    join movie on screening.movie_id = movie.id 
+                    join cinema on screening.cinema_id = cinema.id 
+                    where screening.movie_id = (select movie.id from movie where movie.moviedb_id = ${req.body.moviedb_id}) 
+                    and screening.cinema_id = (select cinema.id from cinema where cinema.name = '${req.body.cinema}')`;
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+})
+
+//Untuk mengambil daftar screening (lama)
 app.get('/movie/:id', (req, res) => {
     let sql = `select * from  movie inner join screening on movie.id = screening.movie_id where movie_id = (select id from movie where moviedb_id = ${req.params.id})`;
     db.query(sql, (err, result) => {
@@ -71,6 +175,7 @@ app.get('/movie/:id', (req, res) => {
     });
 })
 
+//Untuk mendapatkan kursi yang sudah direservasi
 app.get('/seat/:id', (req, res) => {
     let sql = `select * from seat_reserved left join reservation on seat_reserved.reservation_id = reservation.id where screening_id = '${req.params.id}' and active = 1`;
     db.query(sql, (err, result) => {
@@ -79,8 +184,9 @@ app.get('/seat/:id', (req, res) => {
     });
 })
 
+//Untuk mendapatkan harga tiket dari screening yang dipilih
 app.get('/price/:id', (req, res) => {
-    let sql = `select price from screening where id = '${req.params.id}';`;
+    let sql = `select theater_id, price from screening where id = '${req.params.id}';`;
     db.query(sql, (err, result) => {
         if (err) throw err;
         res.send(result);

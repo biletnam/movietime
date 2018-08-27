@@ -1,3 +1,24 @@
+export const city = (parameterKu) => {
+    return {
+        type: 'selected_city',
+        payload: parameterKu
+    };
+};
+
+export const provider = (parameterKu) => {
+    return {
+        type: 'selected_provider',
+        payload: parameterKu
+    };
+};
+
+export const cinema = (parameterKu) => {
+    return {
+        type: 'selected_cinema',
+        payload: parameterKu
+    };
+};
+
 export const movie1 = (parameterKu) => {
     return {
         type: 'movie_1',
