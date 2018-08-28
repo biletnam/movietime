@@ -22,7 +22,7 @@ class Payment extends Component {
                 this.setState({
                     cookie: true
                 });
-
+            console.log(response)
             window.location.reload();
             window.location.replace('/paymentsuccess');
 

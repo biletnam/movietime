@@ -166,18 +166,9 @@ app.post('/screening', (req, res) => {
     });
 })
 
-//Untuk mengambil daftar screening (lama)
-app.get('/movie/:id', (req, res) => {
-    let sql = `select * from  movie inner join screening on movie.id = screening.movie_id where movie_id = (select id from movie where moviedb_id = ${req.params.id})`;
-    db.query(sql, (err, result) => {
-        if (err) throw err;
-        res.send(result);
-    });
-})
-
 //Untuk mendapatkan kursi yang sudah direservasi
 app.get('/seat/:id', (req, res) => {
-    let sql = `select * from seat_reserved left join reservation on seat_reserved.reservation_id = reservation.id where screening_id = '${req.params.id}' and reservation.active = 1`;
+    let sql = `select * from seat_reserved left join reservation on seat_reserved.reservation_id = reservation.id where screening_id = '${req.params.id}'`;
     db.query(sql, (err, result) => {
         if (err) throw err;
         res.send(result);
@@ -187,6 +178,114 @@ app.get('/seat/:id', (req, res) => {
 //Untuk mendapatkan kode theater & harga tiket dari screening yang dipilih
 app.get('/price/:id', (req, res) => {
     let sql = `select theater_id, price from screening where id = '${req.params.id}';`;
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+})
+
+//Untuk membuat reservasi awal (sebelum membayar, maka status active = 0)
+app.post('/createreservation', (req, res) => {
+    //Buat data di tabel reservation
+    var sql1 = `insert into reservation values ( null, now(), '${req.body.screening}', (select user_id from session where session_id = '${req.body.cookie}'), '${req.body.theater}', '${req.body.seat}', ${req.body.total_seats}, ${req.body.price}, ${req.body.total_price}, 0)`
+   
+    db.query(sql1, (err, result) => {
+        if (err) throw err;
+        res.send(result)
+
+        //Buat data di tabel seat_reserved
+        for (let i=0; i<req.body.seat.length; i++){
+            var seat_id = `${req.body.theater}${req.body.seat[i]}`
+            var sql2 = `insert into seat_reserved values (null, '${seat_id}', now(), ${result.insertId}, 0)`
+            db.query(sql2, (err, result) => {
+                if (err) throw err;
+            })
+        }
+
+    })
+
+    //Buat data di tabel reservation_history
+    var sql3 = `insert into reservation_history values ( null, now(), '${req.body.screening}', (select user_id from session where session_id = '${req.body.cookie}'), '${req.body.theater}', '${req.body.seat}', ${req.body.total_seats}, ${req.body.price}, ${req.body.total_price}, 0)`
+   
+    db.query(sql3, (err, result) => {
+        if (err) throw err;
+
+        //Buat data di tabel seat_reserved_history
+        for (let i=0; i<req.body.seat.length; i++){
+            var seat_id = `${req.body.theater}${req.body.seat[i]}`
+            var sql4 = `insert into seat_reserved_history values (null, '${seat_id}', now(), ${result.insertId}, 0)`
+            db.query(sql4, (err, result) => {
+                if (err) throw err;
+            })
+        }
+
+    })
+})
+
+//Untuk memperbaharui tiket yang sudah dibayar (active = 1)
+app.post('/createfinalreservation', (req, res) => {
+    //Cari reservasi terakhir dari user dengan status active 0
+    let sql0 = `select r.* from reservation r  join ( select max(id) as id from reservation where active = 0 group by user_id ) x on x.id = r.id where user_id = (select user_id from session where session_id = '${req.body.cookie}')`;
+
+    db.query(sql0, (err, result) => {
+        if (err) throw err;
+
+        //ubah status active menjadi 1 di tabel reservation
+        var sql1 = `update reservation set active = 1 where id = ${result[0].id}`
+        db.query(sql1, (err, result) => {
+            if (err) throw err;
+        });
+
+        //ubah status active menjadi 1 di tabel seat_reserved 
+        var sql2 = `update seat_reserved set active = 1 where reservation_id = '${result[0].id}'`
+        db.query(sql2, (err, result) => {
+            if (err) throw err;
+        });
+
+
+        //Masukkan data ke tabel reservation_history
+        let seatString = result[0].seat;
+        let seatArray = seatString.split(",");
+        let theater_id = result[0].theater_id;
+        var sql3 = `insert into reservation_history values ( null, now(), '${result[0].screening_id}', ${result[0].user_id}, '${result[0].theater_id}', '${result[0].seat}', ${result[0].total_seats}, ${result[0].price}, ${result[0].total_price}, 1)`
+        
+        db.query(sql3, (err, result) => {
+            if (err) throw err;
+            console.log(`Ini result 330: ${result}`);
+            for (let i=0; i<seatArray.length; i++){
+                var seat_id = `${theater_id}${seatArray[i]}`
+                var sql4 = `insert into seat_reserved_history values (null, '${seat_id}', now(), ${result.insertId}, 1)`
+                db.query(sql4, (err, result) => {
+                    if (err) throw err;
+                    // res.send(result);
+                })
+            }
+        });
+    });
+
+})
+
+//Untuk mengeluarkan data summary
+app.post('/summary', (req, res) => {
+    let sql = 
+    `select max(reservation.id) as id, 
+            movie.movie_name, 
+            screening.day, 
+            screening.date_time, 
+            theater.theater_name, 
+            reservation.total_seats, 
+            reservation.seat, 
+            reservation.total_price,
+            cinema.provider,
+            cinema.name,
+            cinema.city 
+    from screening 
+                    join reservation on reservation.screening_id = screening.id 
+                    join movie on screening.movie_id = movie.id 
+                    join theater on screening.theater_id = theater.id 
+                    join cinema on screening.cinema_id = cinema.id
+    where reservation.user_id = (select user_id from session where session_id = '${req.body.cookie}') and reservation.active = 0`;
+
     db.query(sql, (err, result) => {
         if (err) throw err;
         res.send(result);
@@ -238,84 +337,24 @@ passport.use(new LocalStrategy ({
         let sql =  `select count(*) hitung from user where email = '${email}' and password = '${password}'`
         db.query(sql, (err, result) => {
         
-        if (err) throw err;
+            if (err) throw err;
 
-        if (result[0].hitung == 1){
-            console.log(`Berhasil Login - Passport`)
-            let sessionID = uuidv4()
-            return done(null, { kode: '001', email: email, session_id: sessionID });
+            if (result[0].hitung == 1){
+                console.log(`Berhasil Login - Passport`)
+                let sessionID = uuidv4()
+                return done(null, { kode: '001', email: email, session_id: sessionID });
 
-        } else {
-            console.log(`Gagal Login - Passport`)
-            return done(null, false, { message: 'Incorrect username or password.' });
-        }                      
+            } else {
+                console.log(`Gagal Login - Passport`)
+                return done(null, false, { message: 'Incorrect username or password.' });
+            }                      
         })
     }
 ))
 
 app.post('/login', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/', failureFlash: true }));
 
-// app.post('/createreservation', (req, res) => {
-//     // var sql1 = `insert into reservation values ( null, now(), '${req.body.screening}', (select id from user where email = '${req.body.email}' and password = '${req.body.password}'),1)`
-//     // var sql1 = `insert into reservation values ( null, now(), '${req.body.screening}', (select user_id from session where session_id = '${req.body.cookie}'), 0)`
-//     var sql1 = `insert into reservation values ( null, now(), '${req.body.screening}', (select user_id from session where session_id = '${req.body.cookie}'), '${req.body.seat}', ${req.body.total_seats}, ${req.body.price}, ${req.body.total_price}, 0)`
-   
-//     db.query(sql1, (err, result) => {
-//         if (err) throw err;
-
-//         for (let i=0; i<req.body.seat.length; i++){
-//             var seat_id = `${req.body.theater}${req.body.seat[i]}`
-//             var sql3 = `insert into seat_reserved values (null, '${seat_id}', ${result.insertId})`
-//             db.query(sql3, (err, result) => {
-//                 if (err) throw err;
-//             })
-//         }
-
-//         res.send({
-//             status: 'Dari backend: berhasil create reservation'
-//         })
-
-//     })
-// })
-
-//Untuk membuat reservasi awal (sebelum membayar, maka status active = 0)
-app.post('/createreservation', (req, res) => {
-    //Buat data di tabel reservation
-    var sql1 = `insert into reservation values ( null, now(), '${req.body.screening}', (select user_id from session where session_id = '${req.body.cookie}'), '${req.body.seat}', ${req.body.total_seats}, ${req.body.price}, ${req.body.total_price}, 0)`
-   
-    db.query(sql1, (err, result) => {
-        if (err) throw err;
-        res.send(result)
-
-        //Buat data di tabel seat_reserved
-        for (let i=0; i<req.body.seat.length; i++){
-            var seat_id = `${req.body.theater}${req.body.seat[i]}`
-            var sql2 = `insert into seat_reserved values (null, '${seat_id}', now(), ${result.insertId}, 0)`
-            db.query(sql2, (err, result) => {
-                if (err) throw err;
-            })
-        }
-
-    })
-
-    //Buat data di tabel reservation_history
-    var sql3 = `insert into reservation_history values ( null, now(), '${req.body.screening}', (select user_id from session where session_id = '${req.body.cookie}'), '${req.body.seat}', ${req.body.total_seats}, ${req.body.price}, ${req.body.total_price}, 0)`
-   
-    db.query(sql3, (err, result) => {
-        if (err) throw err;
-
-        //Buat data di tabel seat_reserved_history
-        for (let i=0; i<req.body.seat.length; i++){
-            var seat_id = `${req.body.theater}${req.body.seat[i]}`
-            var sql4 = `insert into seat_reserved_history values (null, '${seat_id}', now(), ${result.insertId}, 0)`
-            db.query(sql4, (err, result) => {
-                if (err) throw err;
-            })
-        }
-
-    })
-})
-
+//Untuk cek apakah ada session dengan cookie yang diminta
 app.post('/cookie', (req, res) => {
     // console.log(`Ini req.body cookie: ${req.body.cookieMovietime}`)
     let sql =  `select count(*) hitung from session where session_id = '${req.body.cookieMovietime}'`    
@@ -347,66 +386,6 @@ app.post('/signout', (req, res) => {
             status: 'Berhasil hapus session',
 	});
     })
-})
-
-app.post('/summary', (req, res) => {
-    let sql = 
-    `select max(reservation.id) as id, 
-            movie.movie_name, 
-            screening.day, 
-            screening.date_time, 
-            theater.theater_name, 
-            reservation.total_seats, 
-            reservation.seat, 
-            reservation.total_price 
-    from screening 
-                    join reservation on reservation.screening_id = screening.id 
-                    join movie on screening.movie_id = movie.id 
-                    join theater on screening.theater_id = theater.id 
-    where reservation.user_id = (select user_id from session where session_id = '${req.body.cookie}') and reservation.active = 0`;
-
-    db.query(sql, (err, result) => {
-        if (err) throw err;
-        res.send(result);
-    });
-})
-
-//Untuk memperbaharui tiket yang sudah dibayar (active = 1)
-app.post('/createfinalreservation', (req, res) => {
-    //Cari reservasi terakhir dari user dengan status active 0
-    let sql0 = `select r.* from reservation r  join ( select max(id) as id from reservation where active = 0 group by user_id ) x on x.id = r.id where user_id = (select user_id from session where session_id = '${req.body.cookie}')`;
-
-    db.query(sql0, (err, result) => {
-        if (err) throw err;
-
-        //ubah status active menjadi 1 di tabel reservation
-        var sql1 = `update reservation set active = 1 where id = ${result[0].id}`
-        db.query(sql1, (err, result) => {
-            if (err) throw err;
-        });
-
-        //ubah status active menjadi 1 di tabel seat_reserved 
-        var sql2 = `update seat_reserved set active = 1 where reservation_id = '${result[0].id}'`
-        db.query(sql2, (err, result) => {
-            if (err) throw err;
-        });
-
-        //Masukkan data ke tabel reservation_history
-        let seatString = result[0].seat;
-        var seatArray = seatString.split(",");
-        var sql3 = `insert into reservation_history values ( null, now(), '${result[0].screening_id}', ${result[0].user_id}, '${result[0].seat}', ${result[0].total_seats}, ${result[0].price}, ${result[0].total_price}, 1)`
-        db.query(sql3, (err, result) => {
-            if (err) throw err;
-            for (let i=0; i<seatArray.length; i++){
-                var seat_id = `TH001${seatArray[i]}`
-                var sql4 = `insert into seat_reserved_history values (null, '${seat_id}', now(), ${result.insertId}, 1)`
-                db.query(sql4, (err, result) => {
-                    if (err) throw err;
-                })
-            }
-        });
-        res.send(result);
-    });
 })
 
 app.post('/paymentsuccess', (req, res) => {

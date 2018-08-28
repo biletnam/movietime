@@ -20,6 +20,8 @@ class Summary extends Component {
             total_seats: '-',
             seat: '-',
             total_price: '-',
+            cinema_name: '-',
+            cinema_city: '-',
         }
     }
     componentDidMount(){
@@ -41,16 +43,75 @@ class Summary extends Component {
                 total_seats: response.data[0].total_seats,
                 seat: response.data[0].seat,
                 total_price: response.data[0].total_price,
+                cinema_city: response.data[0].city,
+                cinema_name: response.data[0].name,
+                cinema_provider: response.data[0].provider,
             })
-            console.log(this.state.id)
-            console.log(this.state.movie_name)
-            console.log(this.state.day)
-
-
+            this.neatSchedule();
         })
         .catch(function (error) {
             console.log(error);
         });
+    }
+
+    neatSchedule(){
+        let date_time_year = this.state.date_time.substr(0, 4);
+        let date_time_month = this.state.date_time.substr(5, 2);
+        let date_time_date = this.state.date_time.substr(8, 2);
+
+        let date = new Date(this.state.date_time);
+        let date_time_hour = date.getHours();
+        let date_time_minute = date.getMinutes();
+        let date_time_second = date.getSeconds();
+        
+        switch (date_time_month) {
+            case '01':
+                date_time_month = 'January';
+                break;
+            case '02':
+                date_time_month = 'February';
+                break;
+            case '03':
+                date_time_month = 'March';
+                break;
+            case '04':
+                date_time_month = 'April';
+                break;
+            case '05':
+                date_time_month = 'May';
+                break;
+            case '06':
+                date_time_month = 'June';
+                break;
+            case '07':
+                date_time_month = 'July';
+                break;
+            case '08':
+                date_time_month = 'August';
+                break;
+            case '09':
+                date_time_month = 'September';
+                break;
+            case '10':
+                date_time_month = 'October';
+                break;
+            case '11':
+                date_time_month = 'November';
+                break;
+            case '12':
+                date_time_month = 'December';
+                break;
+            default:
+                break;
+        }        
+        this.setState({
+            date_time_year: date_time_year,
+            date_time_month: date_time_month,
+            date_time_date: date_time_date,
+            date_time_hour: date_time_hour,
+            date_time_minute: date_time_minute,
+            date_time_second: date_time_second,
+        })
     }
 
     render(){
@@ -73,9 +134,15 @@ class Summary extends Component {
                             </tr>
                             <tr>
                                 <td>Schedule</td>
-                                <td>: {this.state.day} {this.state.date_time}</td>
+                                <td>: {this.state.day}, {this.state.date_time_date} {this.state.date_time_month} {this.state.date_time_year} pk. {this.state.date_time_hour}:0{this.state.date_time_minute}</td>
                             </tr>
                             <tr>
+                                <td>Cinema</td>
+                                <td>: {this.state.cinema_provider} - {this.state.cinema_name}</td>
+                            </tr><tr>
+                                <td>City</td>
+                                <td>: {this.state.cinema_city}</td>
+                            </tr><tr>
                                 <td>Theater</td>
                                 <td>: {this.state.theater_name}</td>
                             </tr>

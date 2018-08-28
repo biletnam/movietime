@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import '../style/Header.css'
 
-// import { connect } from 'react-redux';
-// import { email, password } from '../actions';
-
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
@@ -26,15 +23,13 @@ class Header extends Component {
     componentWillMount(){
         //Check cookies
         let cookiePeramban = cookies.get('MOVIETIME_SESSID')
-        console.log(cookiePeramban)
+        // console.log(cookiePeramban)
         
         var url = 'http://localhost:5001/cookie';
         axios.post(url, {
             cookieMovietime: cookiePeramban,
         })
         .then((response) => {
-            // console.log(response);
-            // console.log(response.data.kode)
             if (response.data.kode == '001'){
                 this.setState({
                     cookie: true,
@@ -68,9 +63,22 @@ class Header extends Component {
                 })
             }
         });
+
+        let cookiePeramban = cookies.get('MOVIETIME_SESSID')
+        var urlProfile = 'http://localhost:5001/profile';
+        axios.post(urlProfile, {
+            cookie: cookiePeramban,
+        })
+        .then((response) => {
+            this.setState({
+                email: response.data[0].email,
+            })
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
     }
 
-    //Function to login
     login(){
         var url = 'http://localhost:5001/login';
         axios.post(url, {
@@ -88,7 +96,7 @@ class Header extends Component {
             });
 
             window.location.reload()
-            console.log(`Berhasil login + session + cookie: ${this.state.cookie}`)
+            // console.log(`Berhasil login + session + cookie: ${this.state.cookie}`)
           }
         })
         .catch(function (error) {
@@ -104,7 +112,7 @@ class Header extends Component {
           passwordConfirm: this.refs.passwordregisterconfirm.value
         })
         .then((response) => {
-          console.log(`Ini response register: ${response.data}`);
+        //   console.log(`Ini response register: ${response.data}`);
           if (response.data.kode == '001'){
             cookies.set('MOVIETIME_SESSID', response.data.session_id)
 
@@ -116,7 +124,7 @@ class Header extends Component {
             });
 
             window.location.reload()
-            console.log(`Ini setelah berahasil register ${this.state.email}`)
+            // console.log(`Ini setelah berahasil register ${this.state.email}`)
           }
         })
         .catch((error) => {
@@ -146,7 +154,7 @@ class Header extends Component {
     }
 
   render() {
-        // Cek cookie
+        // Tampilan jika sudah login
         if (this.state.cookie == true){
             return  (
                 <div className="HEADER">
@@ -155,16 +163,21 @@ class Header extends Component {
                             <Link to="/"><img src={this.state.logo} alt="" height={this.state.dynamic_height}/></Link>
                         </div>
 
-                        <ul class="nav navbar-nav navbar-right">
-                            <li class="dropdown">
-                                <button className="btn btn-warning mt-btn my-2 my-sm-0" onClick={()=> this.signOut()}>LOG OUT<span class="caret"></span></button>
-                            </li>
-                        </ul>
+                        <div class="dropdown ">
+                            <button class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {this.state.email}
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu2">
+                            <Link to="/profile"><button class="dropdown-item" type="button">My Profile</button></Link>
+                            <button className="dropdown-item" onClick={()=> this.signOut()}>Log Out</button>
+                            </div>
+                        </div>
                     </nav>
             </div>
             )
         }
 
+    // Tampilan jika belum login
     return (
       <div className="HEADER">
             <nav className={this.state.dynamic_Class} id="banner">

@@ -29,6 +29,7 @@ class MovieDetails extends Component {
             chooseCity: 'Choose City',
             chooseProvider: 'Choose Provider',
             chooseCinema: 'Choose Cinema',
+            chooseSchedule: 'Choose Schedule',
 
             //Untuk konten movie
             moviePoster: '',
@@ -164,11 +165,38 @@ class MovieDetails extends Component {
 
     //Untuk mengambil daftar provider dari movie & kota yang dipilih
     providerFilter(city){
-        //Ganti state chooseCity
         this.setState({
+            //Ganti state chooseCity
             chooseCity: city,
+            //Ganti state choose2 lain
             chooseProvider: 'Choose Provider',
             chooseCinema: 'Choose Cinema',
+            chooseSchedule: 'Choose Schedule',
+            //Ganti state isi state filter
+            providerMovies: [],
+            cinemaMovies: [],
+            screeningSchedule: [],
+            //Hapus kondisi kursi sebelumnya
+            uncheckA1: false,
+            uncheckA2: false,
+            uncheckA3: false,
+            uncheckA4: false,
+            uncheckA5: false,
+            uncheckB1: false,
+            uncheckB2: false,
+            uncheckB3: false,
+            uncheckB4: false,
+            uncheckB5: false,
+            uncheckC1: false,
+            uncheckC2: false,
+            uncheckC3: false,
+            uncheckC4: false,
+            uncheckC5: false,
+            uncheckD1: false,
+            uncheckD2: false,
+            uncheckD3: false,
+            uncheckD4: false,
+            uncheckD5: false,
         })
 
         //Ambil daftar provider dari kota yang dipilih
@@ -192,10 +220,36 @@ class MovieDetails extends Component {
 
     //Untuk mengambil daftar cinema dari movie, kota & provider yang dipilih
     cinemaFilter(provider){
-        //Ganti state chooseCity
         this.setState({
+            //Ganti state chooseProvider
             chooseProvider: provider,
-            chooseCinema : 'Choose Cinema',
+            //Ganti state choose2 lain
+            chooseCinema: 'Choose Cinema',
+            chooseSchedule: 'Choose Schedule',
+            //Ganti state isi state filter
+            cinemaMovies: [],
+            screeningSchedule: [],
+            //Hapus kondisi kursi sebelumnya
+            uncheckA1: false,
+            uncheckA2: false,
+            uncheckA3: false,
+            uncheckA4: false,
+            uncheckA5: false,
+            uncheckB1: false,
+            uncheckB2: false,
+            uncheckB3: false,
+            uncheckB4: false,
+            uncheckB5: false,
+            uncheckC1: false,
+            uncheckC2: false,
+            uncheckC3: false,
+            uncheckC4: false,
+            uncheckC5: false,
+            uncheckD1: false,
+            uncheckD2: false,
+            uncheckD3: false,
+            uncheckD4: false,
+            uncheckD5: false,
         })
 
         //Ambil daftar cinema dari kota & provider yang dipilih
@@ -221,32 +275,45 @@ class MovieDetails extends Component {
 
     //Untuk mengambil daftar screening dari movie & cinema yang dipilih
     screeningFilter(cinema){
-        //Ganti state chooseCity
         this.setState({
+            //Ganti state chooseProvider
             chooseCinema: cinema,
+            //Ganti state choose2 lain
+            chooseSchedule: 'Choose Schedule',
+            //Ganti state isi state filter
+            screeningSchedule: [],
+            //Hapus kondisi kursi sebelumnya
+            uncheckA1: false,
+            uncheckA2: false,
+            uncheckA3: false,
+            uncheckA4: false,
+            uncheckA5: false,
+            uncheckB1: false,
+            uncheckB2: false,
+            uncheckB3: false,
+            uncheckB4: false,
+            uncheckB5: false,
+            uncheckC1: false,
+            uncheckC2: false,
+            uncheckC3: false,
+            uncheckC4: false,
+            uncheckC5: false,
+            uncheckD1: false,
+            uncheckD2: false,
+            uncheckD3: false,
+            uncheckD4: false,
+            uncheckD5: false,
         })
 
-        // //Get screening schedule (lama)
-        // axios.get(`http://localhost:5001/movie/${this.state.movieSelected}`)
-        // .then((response) => {          
-        //   this.setState({
-        //     screeningSchedule: response.data,
-        //   })            
-        // })
-
-        let cinemaUser = cinema;
-
         //Ambil daftar movie dari cinema yang dipilih
+        let cinemaUser = cinema;
         var url = 'http://localhost:5001/screening';
-        // console.log(this.state.movieSelected)
-        // console.log(cinemaUser)
 
         axios.post(url, {
             moviedb_id: this.state.movieSelected,
             cinema: cinemaUser,
         })
         .then((response) => {
-            // console.log(response)
             this.setState({
                 screeningSchedule: response.data,
             })
@@ -269,9 +336,13 @@ class MovieDetails extends Component {
     }
 
     // To disabled checkbox which booked + get theater_id and price
-    klik(screening_id){
+    klik(screening_id, schedule){
         // To get all the checkbox available to check again when user change schedule + erase post action
         this.setState({
+            //Ganti state chooseProvider
+            chooseSchedule: schedule,
+            screeningSelected: screening_id,
+            //Hapus kondisi kursi sebelumnya
             uncheckA1: false,
             uncheckA2: false,
             uncheckA3: false,
@@ -292,7 +363,7 @@ class MovieDetails extends Component {
             uncheckD3: false,
             uncheckD4: false,
             uncheckD5: false,
-            screeningSelected: screening_id,
+            
         })
         console.log(screening_id)
         axios.get(`http://localhost:5001/seat/${screening_id}`)
@@ -307,7 +378,7 @@ class MovieDetails extends Component {
                 })
             })
         })
-        
+
         // For take theater & price
         axios.get(`http://localhost:5001/price/${screening_id}`)
         .then((ambilData) => {
@@ -502,7 +573,11 @@ class MovieDetails extends Component {
                     break;
             }        
 
-            return <option value={item.id} key={index}>{day}, {date_time_date} {date_time_month} {date_time_year} pk. {date_time_hour}:0{date_time_minute}</option>
+            const schedule = `${day}, ${date_time_date} ${date_time_month} ${date_time_year} ${date_time_hour}:0${date_time_minute}`
+
+            return (
+                <button onClick={()=>{this.klik(item.id, schedule)}} key={index} class="dropdown-item" type="button">{schedule}</button>            
+            ) 
         })
 
         // Untuk memunculkan tampilan jika sudah login (tidak ada modal login/registrasi)
@@ -762,14 +837,23 @@ class MovieDetails extends Component {
                     <br />
 
                     <h2>Choose your schedule</h2>
-                    <div className="mt-moviedetails-schedule">
+                    {/* <div className="mt-moviedetails-schedule">
                         <select  onChange={(e) => this.klik(e.target.value)} className="custom-select">
                             <option selected>Day</option>
                             { screeningDay }
                         </select>
                         <br />
                     </div>
-                    <br />
+                    <br /> */}
+
+                    <div class="dropdown">
+                        <button class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {this.state.chooseSchedule}                                    
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                            {screeningDay}
+                        </div>
+                    </div>
 
                     <h2>Choose your seats</h2>
                     <div className="mt-moviedetails-seats ">

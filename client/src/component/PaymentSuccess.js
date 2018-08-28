@@ -48,8 +48,12 @@ class Payment extends Component {
                   </center>
 
                   <p style={{fontsize:"20px", color:"#5C5C5C"}}>
-                    We have sent you an email to <strong> {this.state.email} </strong> with your details.
+                    Thank you for your reservation! 
                   </p>
+                  
+                  {/* <p style={{fontsize:"20px", color:"#5C5C5C"}}>
+                    We have sent you an email to <strong> {this.state.email} </strong> with your details.
+                  </p> */}
                   <button class="btn btn-success">     View Ticket      </button>
                   <br/><br/>
                 </div>
