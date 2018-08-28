@@ -362,10 +362,10 @@ class MovieDetails extends Component {
             cookies.set('MOVIETIME_SESSID', response.data.session_id)
 
             this.setState({
-                email:this.refs.emaillogin.value,
-                password:this.refs.passwordlogin.value,
+                cookie: true,
             });
-            console.log(`Ini setelah berahasil register ${this.state.email}`)
+
+            // console.log(`Ini setelah berhasil register ${this.state.email}`)
             this.createReservation();
           }
         })
@@ -388,13 +388,10 @@ class MovieDetails extends Component {
             cookies.set('MOVIETIME_SESSID', response.data.session_id)
 
             this.setState({
-                email:this.refs.emailregister.value,
-                password:this.refs.passwordregister.value,
-                passwordconfirm:this.refs.passwordregisterconfirm.value,
                 cookie: true
             });
 
-            console.log(`Ini setelah berahasil register ${this.state.email}`)
+            // console.log(`Ini setelah berhasil register ${this.state.email}`)
             this.createReservation();
             
           }
@@ -410,23 +407,18 @@ class MovieDetails extends Component {
 
         var url = 'http://localhost:5001/createreservation';
         axios.post(url, {
-            cookie: cookiePeramban,
             screening: this.state.screeningSelected,
-            theater: this.state.theater,
+            cookie: cookiePeramban,
             total_seats: (this.state.seat).length,
             price: this.state.price,
             total_price: this.totalPrice(),
+            theater: this.state.theater,
             seat: this.state.seat,
         })
         .then((response) => {
-            console.log(`Berhasil!`)
-                this.setState({
-                    cookie: true
-                });
-
+            console.log(response)
             window.location.reload();
             window.location.replace('/summary');
-
         })
         .catch(function (error) {
             console.log(error);
@@ -513,7 +505,7 @@ class MovieDetails extends Component {
             return <option value={item.id} key={index}>{day}, {date_time_date} {date_time_month} {date_time_year} pk. {date_time_hour}:0{date_time_minute}</option>
         })
 
-        // Untuk memunculkan tampilan jika sudah login
+        // Untuk memunculkan tampilan jika sudah login (tidak ada modal login/registrasi)
         if (this.state.cookie == true){
             return (
                 <div className="MOVIEDETAILS">
@@ -521,13 +513,57 @@ class MovieDetails extends Component {
                         <div className="mt-moviedetails-movie-image">
                             <img className="" src={this.state.moviePoster} height="500px" alt="" /> 
                         </div>
-        
+
                         <div className="mt-moviedetails-movie-description">
-                            <h1>{this.state.movieTitle}</h1>
+                            <h1>{this.state.movieTitle}{this.state.cookie}</h1>
                             <br />
                             <p><strong>Synopsis</strong></p>
                             <p>{this.state.movieOverview}</p>
-                           
+                            <br />
+                        
+                            <h2>Choose your cinema</h2>
+                            <div className="filter">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        {this.state.chooseCity}
+                                                    </button>
+                                                    <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                                        {city}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        {this.state.chooseProvider}
+                                                    </button>
+                                                    <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                                        {provider}
+                                                    </div>
+                                                </div>
+                                            </td>   
+                                            <td>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        {this.state.chooseCinema}                                    
+                                                    </button>
+                                                    <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                                        {cinema}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td><a onClick={() => {this.clearFilter()}}><u>clear</u></a></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                    
+                                </div>
+                            <br />
+
                             <h2>Choose your schedule</h2>
                             <div className="mt-moviedetails-schedule">
                                 <select  onChange={(e) => this.klik(e.target.value)} className="custom-select">
@@ -537,6 +573,7 @@ class MovieDetails extends Component {
                                 <br />
                             </div>
                             <br />
+
                             <h2>Choose your seats</h2>
                             <div className="mt-moviedetails-seats ">
                                 <div className="kotak-A">A</div>
@@ -633,10 +670,10 @@ class MovieDetails extends Component {
                             </center>
                             <br />
                             <br />
-        
+
                             <div className="mt-summary-booking">
+                            <h1>SUMMARY</h1>
                                 <table>
-                                    
                                     <tr>
                                         <td>Seat(s) selected</td>
                                         <td>: {this.state.seat.toString()}</td>
