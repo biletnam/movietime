@@ -65,7 +65,7 @@ class Header extends Component {
         });
 
         let cookiePeramban = cookies.get('MOVIETIME_SESSID')
-        var urlProfile = 'http://localhost:5001/profile';
+        var urlProfile = 'http://localhost:5001/myprofile';
         axios.post(urlProfile, {
             cookie: cookiePeramban,
         })

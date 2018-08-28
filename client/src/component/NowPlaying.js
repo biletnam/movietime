@@ -210,6 +210,11 @@ class NowPlaying extends Component {
     }
 
     searchMovie(){
+        //Hapus state hasil filter
+        this.props.city('Choose City')
+        this.props.provider('Choose Provider')
+        this.props.cinema('Choose Cinema')
+
         //Ambil daftar movie berdasarkan kata kunci
         let keywordUser = this.refs.searchBox.value;
         var url = 'http://localhost:5001/search';

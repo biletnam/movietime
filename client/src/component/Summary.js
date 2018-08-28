@@ -4,9 +4,12 @@ import '../style/Summary.css';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
+import Countdown from 'react-countdown-now';
+
 //Cookies
 import Cookies from 'universal-cookie';
 const cookies = new Cookies();
+
 
 class Summary extends Component {
     constructor(){
@@ -46,12 +49,25 @@ class Summary extends Component {
                 cinema_city: response.data[0].city,
                 cinema_name: response.data[0].name,
                 cinema_provider: response.data[0].provider,
+                reservation_date: response.data[0].reserve_date,
             })
             this.neatSchedule();
+            this.timer()
         })
         .catch(function (error) {
             console.log(error);
         });
+    }
+
+    timer(){
+        let date1 = new Date(this.state.reservation_date);
+        let date_time_milliseconds = date1.getTime();
+        this.setState({
+            date_time_milliseconds: date_time_milliseconds,
+        })
+
+        console.log(Date.now())
+        console.log(this.state.date_time_milliseconds)
     }
 
     neatSchedule(){
@@ -115,6 +131,18 @@ class Summary extends Component {
     }
 
     render(){
+        // Untuk reload halaman jika waktu sudah habis
+        // Renderer callback with condition
+        const renderer = ({ hours, minutes, seconds, completed }) => {
+            if (completed) {
+            // Render a completed state
+            window.location.replace('/');
+            } else {
+            // Render a countdown
+            return <span>{hours}:{minutes}:{seconds}</span>;
+            }
+        };
+
         return(
             <div className="SUMMARY">
                 <center>
@@ -165,6 +193,13 @@ class Summary extends Component {
                     <br />
                     <br />
 
+                    <p>This reservation must be paid within <strong>15 minutes</strong></p>
+                    <br />
+                    <Countdown
+                        date={this.state.date_time_milliseconds + 900000}
+                        renderer={renderer}
+                    />
+                    <br/>
                     <Link to="/payment">                               
                         <button type="button" class="btn btn-warning">CHECK OUT</button>
                     </Link>

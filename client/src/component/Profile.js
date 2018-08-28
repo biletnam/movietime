@@ -4,6 +4,8 @@ import '../style/Profile.css';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
+import Countdown from 'react-countdown-now';
+
 //Cookies
 import Cookies from 'universal-cookie';
 const cookies = new Cookies();
@@ -27,9 +29,12 @@ class Profile extends Component {
         }
     }
     componentDidMount(){
-        let cookiePeramban = cookies.get('MOVIETIME_SESSID')        
+        // Supaya halaman mulai dari atas
+        window.scrollTo(0, 0)  
 
-        var urlProfile = 'http://localhost:5001/profile';
+        //Untuk ambil email
+        let cookiePeramban = cookies.get('MOVIETIME_SESSID')        
+        var urlProfile = 'http://localhost:5001/myprofile';
         axios.post(urlProfile, {
             cookie: cookiePeramban,
         })
@@ -42,44 +47,82 @@ class Profile extends Component {
             console.log(error);
         });
 
-        var url = 'http://localhost:5001/summaryprofile';
+
+        var url = 'http://localhost:5001/myreservation';
         axios.post(url, {
             cookie: cookiePeramban,
         })
         .then((response) => {
-            // console.log(response)
+            console.log(response)
             this.setState({
                 myReservation: response.data,
             })
-            // this.setState({
-            //     id: response.data[0].id,
-            //     movie_name: response.data[0].movie_name,
-            //     day: response.data[0].day,
-            //     date_time: response.data[0].date_time,
-            //     theater_name: response.data[0].theater_name,
-            //     total_seats: response.data[0].total_seats,
-            //     seat: response.data[0].seat,
-            //     total_price: response.data[0].total_price,
-            // })
+            this.neatSchedule();
         })
         .catch(function (error) {
             console.log(error);
         });
+    }
 
-        // var urlReservation = 'http://localhost:5001/myreservation';
-        // axios.post(urlReservation, {
-        //     cookie: cookiePeramban,
-        // })
-        // .then((response) => {
-        //     console.log(response)
-        //     this.setState({
-        //         myReservation: response.data,
-        //     })
-        //     console.log(this.state.myReservation)
-        // })
-        // .catch(function (error) {
-        //     console.log(error);
-        // });
+
+    neatSchedule(){
+        let date_time_year = this.state.date_time.substr(0, 4);
+        let date_time_month = this.state.date_time.substr(5, 2);
+        let date_time_date = this.state.date_time.substr(8, 2);
+
+        let date = new Date(this.state.date_time);
+        let date_time_hour = date.getHours();
+        let date_time_minute = date.getMinutes();
+        let date_time_second = date.getSeconds();
+        
+        switch (date_time_month) {
+            case '01':
+                date_time_month = 'January';
+                break;
+            case '02':
+                date_time_month = 'February';
+                break;
+            case '03':
+                date_time_month = 'March';
+                break;
+            case '04':
+                date_time_month = 'April';
+                break;
+            case '05':
+                date_time_month = 'May';
+                break;
+            case '06':
+                date_time_month = 'June';
+                break;
+            case '07':
+                date_time_month = 'July';
+                break;
+            case '08':
+                date_time_month = 'August';
+                break;
+            case '09':
+                date_time_month = 'September';
+                break;
+            case '10':
+                date_time_month = 'October';
+                break;
+            case '11':
+                date_time_month = 'November';
+                break;
+            case '12':
+                date_time_month = 'December';
+                break;
+            default:
+                break;
+        }        
+        this.setState({
+            date_time_year: date_time_year,
+            date_time_month: date_time_month,
+            date_time_date: date_time_date,
+            date_time_hour: date_time_hour,
+            date_time_minute: date_time_minute,
+            date_time_second: date_time_second,
+        })
     }
 
     changeEmail(){
@@ -137,9 +180,164 @@ class Profile extends Component {
     }
 
     render(){
-        const myReservation = this.state.myReservation.map((item, index) => {
-            return <tr key={index}><td>{item.id}</td><td>{item.reserve_date}</td><td>{item.id}</td></tr>
+
+        // Untuk reload halaman jika waktu sudah habis
+        // Renderer callback with condition
+        const renderer = ({ hours, minutes, seconds, completed }) => {
+            if (completed) {
+            // Render a completed state
+            window.location.reload()
+            } else {
+            // Render a countdown
+            return <span>{hours}:{minutes}:{seconds}</span>;
+            }
+        };
+
+        const myReservation = this.state.myReservation.map((item, index) => {            
+
+            //Untuk timer tiket yang belum dibayar
+            let date1 = new Date(item.reserve_date);
+            let date_time_milliseconds = date1.getTime();
+
+            console.log(Date.now())
+            console.log(this.state.date_time_milliseconds)
+
+            //Untuk menampilkan jadwal yang lebih rapi
+            let date_time_year = item.date_time.substr(0, 4);
+            let date_time_month = item.date_time.substr(5, 2);
+            let date_time_date = item.date_time.substr(8, 2);
+
+            let date = new Date(item.date_time);
+            let date_time_hour = date.getHours();
+            let date_time_minute = date.getMinutes();
+            
+            switch (date_time_month) {
+                case '01':
+                    date_time_month = 'January';
+                    break;
+                case '02':
+                    date_time_month = 'February';
+                    break;
+                case '03':
+                    date_time_month = 'March';
+                    break;
+                case '04':
+                    date_time_month = 'April';
+                    break;
+                case '05':
+                    date_time_month = 'May';
+                    break;
+                case '06':
+                    date_time_month = 'June';
+                    break;
+                case '07':
+                    date_time_month = 'July';
+                    break;
+                case '08':
+                    date_time_month = 'August';
+                    break;
+                case '09':
+                    date_time_month = 'September';
+                    break;
+                case '10':
+                    date_time_month = 'October';
+                    break;
+                case '11':
+                    date_time_month = 'November';
+                    break;
+                case '12':
+                    date_time_month = 'December';
+                    break;
+                default:
+                    break;
+            }        
+
+
+            if (item.active == 0){
+                return (
+                    <div class="card" key={index}>
+                        <img class="card-img-top" src={item.poster} />
+                        <div class="card-body">
+                            <h5 class="card-title">{item.movie_name}</h5>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>{date_time_date} {date_time_month} {date_time_year}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{date_time_hour}:0{date_time_minute}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{item.provider} - {item.name}</td>
+                                    </tr>                            
+                                    <tr>
+                                        <td>{item.city}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{item.theater_name}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{item.seat}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Rp {item.total_price}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <br />
+                            <br />
+                            <p>This reservation will be expired in :</p>
+                            <Countdown
+                                date={date_time_milliseconds + 900000}
+                                renderer={renderer}
+                            />
+                            <br />
+                            <Link to={'/summary'}><button className="btn btn-warning mt-btn my-2 my-sm-0" type="submit">PAY NOW</button></Link>                
+                        </div>
+                    </div>
+                )
+            }
+
+            else {
+                return (
+                    <div class="card" key={index}>
+                        <img class="card-img-top" src={item.poster} />
+                        <div class="card-body">
+                            <h5 class="card-title">{item.movie_name}</h5>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>{date_time_date} {date_time_month} {date_time_year}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{date_time_hour}:0{date_time_minute}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{item.provider} - {item.name}</td>
+                                    </tr>                            
+                                    <tr>
+                                        <td>{item.city}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{item.theater_name}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{item.seat}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Rp {item.total_price}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <br />
+                            <br />
+                        </div>
+                    </div>
+                )
+            }
+            
         })
+
         return(
             <div className="PROFILE">
                 <center>
@@ -188,21 +386,8 @@ class Profile extends Component {
                                 </table>
                             </div>
                             <div class="tab-pane fade" id="v-pills-reservation" role="tabpanel" aria-labelledby="v-pills-profile-tab">
-                            <div class="card" style={{width: '18rem'}}>
-                                <img class="card-img-top" src="" alt="Card image cap"/>
-                                <div class="card-body">
-                                    <h5 class="card-title">Card title</h5>
-                                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                </div>
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">Cras justo odio</li>
-                                    <li class="list-group-item">Dapibus ac facilisis in</li>
-                                    <li class="list-group-item">Vestibulum at eros</li>
-                                </ul>
-                                <div class="card-body">
-                                    <a href="#" class="card-link">Card link</a>
-                                    <a href="#" class="card-link">Another link</a>
-                                </div>
+                                <div class="card-columns">
+                                   {myReservation}
                                 </div>
                             </div>
                         </div>

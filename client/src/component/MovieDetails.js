@@ -488,7 +488,7 @@ class MovieDetails extends Component {
         })
         .then((response) => {
             console.log(response)
-            window.location.reload();
+            // window.location.reload();
             window.location.replace('/summary');
         })
         .catch(function (error) {
@@ -640,14 +640,14 @@ class MovieDetails extends Component {
                             <br />
 
                             <h2>Choose your schedule</h2>
-                            <div className="mt-moviedetails-schedule">
-                                <select  onChange={(e) => this.klik(e.target.value)} className="custom-select">
-                                    <option selected>Day</option>
-                                    { screeningDay }
-                                </select>
-                                <br />
+                            <div class="dropdown">
+                                <button class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    {this.state.chooseSchedule}                                    
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                    {screeningDay}
+                                </div>
                             </div>
-                            <br />
 
                             <h2>Choose your seats</h2>
                             <div className="mt-moviedetails-seats ">
@@ -772,11 +772,10 @@ class MovieDetails extends Component {
                             <button type="button" class="btn btn-warning" onClick={()=> {this.createReservation();}}>
                                 BUY TICKET
                             </button>
-
                         </div>
                     </div>
                 </div>
-                );
+            );
         }
 
         return (
@@ -837,16 +836,7 @@ class MovieDetails extends Component {
                     <br />
 
                     <h2>Choose your schedule</h2>
-                    {/* <div className="mt-moviedetails-schedule">
-                        <select  onChange={(e) => this.klik(e.target.value)} className="custom-select">
-                            <option selected>Day</option>
-                            { screeningDay }
-                        </select>
-                        <br />
-                    </div>
-                    <br /> */}
-
-                    <div class="dropdown">
+                     <div class="dropdown">
                         <button class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             {this.state.chooseSchedule}                                    
                         </button>

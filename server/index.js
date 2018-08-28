@@ -276,6 +276,7 @@ app.post('/summary', (req, res) => {
             reservation.total_seats, 
             reservation.seat, 
             reservation.total_price,
+            reservation.reserve_date,
             cinema.provider,
             cinema.name,
             cinema.city 
@@ -292,6 +293,7 @@ app.post('/summary', (req, res) => {
     });
 })
 
+//Register
 app.post('/register', (req, res) => {
     let sql = 'INSERT INTO user SET ?';
     let data = {email: req.body.email, password: req.body.password, passwordConfirm: req.body.passwordConfirm}
@@ -309,6 +311,7 @@ app.post('/register', (req, res) => {
     })
 })
 
+//Login
 app.post('/login', (req, res, next) => {
   passport.authenticate('local', function(err, user, info) {
     
@@ -377,6 +380,7 @@ app.post('/cookie', (req, res) => {
     });
 })
 
+//Untuk logout
 app.post('/signout', (req, res) => {
     let sql =  `delete from session where session_id = '${req.body.cookieMovietime}'`
     db.query(sql, (err, result) => {
@@ -388,6 +392,7 @@ app.post('/signout', (req, res) => {
     })
 })
 
+//Untuk halaman payment success
 app.post('/paymentsuccess', (req, res) => {
     let sql = `select email from user where id = (select user_id from session where session_id = '${req.body.cookie}');`;
     db.query(sql, (err, result) => {
@@ -396,7 +401,8 @@ app.post('/paymentsuccess', (req, res) => {
     });
 })
 
-app.post('/profile', (req, res) => {
+//Untuk halaman my profile
+app.post('/myprofile', (req, res) => {
     let sql = `select email from user where id = (select user_id from session where session_id = '${req.body.cookie}');`;
 
     db.query(sql, (err, result) => {
@@ -405,6 +411,7 @@ app.post('/profile', (req, res) => {
     });
 })
 
+//Untuk mengubah email
 app.post('/changeemail', (req, res) => {
     let sql = `update user set email='${req.body.email}' where id=(select user_id from session where session_id='${req.body.cookie}')`;
 
@@ -414,6 +421,7 @@ app.post('/changeemail', (req, res) => {
     });
 })
 
+//Untuk mengubah password
 app.post('/changepassword', (req, res) => {
     let sql = `update user set password='${req.body.password}', passwordConfirm='${req.body.passwordConfirm}' where id=(select user_id from session where session_id='${req.body.cookie}')`;
 
@@ -423,30 +431,33 @@ app.post('/changepassword', (req, res) => {
     });
 })
 
+//Untuk halaman my reservation
 app.post('/myreservation', (req, res) => {
-    let sql = `select * from reservation where user_id = (select user_id from session where session_id='${req.body.cookie}') and active = 1`;
-
-    db.query(sql, (err, result) => {
-        if (err) throw err;
-        res.send(result);
-    });
-})
-
-app.post('/summaryprofile', (req, res) => {
     let sql = 
-    `select reservation.id, 
+    `select 
             movie.movie_name, 
+            movie.poster,
+
             screening.day, 
             screening.date_time, 
+            
             theater.theater_name, 
+            
             reservation.total_seats, 
             reservation.seat, 
-            reservation.total_price 
+            reservation.total_price,
+            reservation.active,
+            reservation.reserve_date,
+            
+            cinema.provider,
+            cinema.name,
+            cinema.city 
     from screening 
                     join reservation on reservation.screening_id = screening.id 
                     join movie on screening.movie_id = movie.id 
                     join theater on screening.theater_id = theater.id 
-    where reservation.user_id = (select user_id from session where session_id = '${req.body.cookie}') and reservation.active = 1`;
+                    join cinema on screening.cinema_id = cinema.id
+    where reservation.user_id = (select user_id from session where session_id = '${req.body.cookie}')`;
 
     db.query(sql, (err, result) => {
         if (err) throw err;

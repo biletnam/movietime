@@ -54,7 +54,7 @@ class Payment extends Component {
                   {/* <p style={{fontsize:"20px", color:"#5C5C5C"}}>
                     We have sent you an email to <strong> {this.state.email} </strong> with your details.
                   </p> */}
-                  <button class="btn btn-success">     View Ticket      </button>
+                  <Link to={'/profile'}><button className="btn btn-success mt-btn my-2 my-sm-0" type="submit">View Ticket</button></Link>                
                   <br/><br/>
                 </div>
           </div>
