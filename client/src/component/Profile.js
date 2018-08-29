@@ -30,7 +30,7 @@ class Profile extends Component {
     }
     componentDidMount(){
         // Supaya halaman mulai dari atas
-        window.scrollTo(0, 0)  
+        // window.scrollTo(0, 0)  
 
         //Untuk ambil email
         let cookiePeramban = cookies.get('MOVIETIME_SESSID')        
@@ -63,7 +63,6 @@ class Profile extends Component {
             console.log(error);
         });
     }
-
 
     neatSchedule(){
         let date_time_year = this.state.date_time.substr(0, 4);
@@ -179,6 +178,18 @@ class Profile extends Component {
         }
     }
 
+    // // Untuk reload halaman jika waktu sudah habis
+    // // Renderer callback with condition
+    // renderer = ({ hours, minutes, seconds, completed }) => {
+    //     if (completed) {
+    //     // Render a completed state
+    //     window.location.reload()
+    //     } else {
+    //     // Render a countdown
+    //     return <span>{hours}:{minutes}:{seconds}</span>;
+    //     }
+    // };
+
     render(){
 
         // Untuk reload halaman jika waktu sudah habis
@@ -252,7 +263,6 @@ class Profile extends Component {
                     break;
             }        
 
-
             if (item.active == 0){
                 return (
                     <div class="card" key={index}>
@@ -288,7 +298,7 @@ class Profile extends Component {
                             <br />
                             <p>This reservation will be expired in :</p>
                             <Countdown
-                                date={date_time_milliseconds + 900000}
+                                date={date_time_milliseconds + 901000}
                                 renderer={renderer}
                             />
                             <br />

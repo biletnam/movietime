@@ -87,7 +87,7 @@ class Header extends Component {
         })
         .then((response) => {
           if (response.data.kode == '001'){
-            cookies.set('MOVIETIME_SESSID', response.data.session_id)
+            cookies.set('MOVIETIME_SESSID', response.data.session_id, {path: '/', expires: new Date(Date.now()+86400000)})
 
             this.setState({
                 email:this.refs.emaillogin.value,
@@ -114,7 +114,7 @@ class Header extends Component {
         .then((response) => {
         //   console.log(`Ini response register: ${response.data}`);
           if (response.data.kode == '001'){
-            cookies.set('MOVIETIME_SESSID', response.data.session_id)
+            cookies.set('MOVIETIME_SESSID', response.data.session_id, {path: '/', expires: new Date(Date.now()+86400000)})
 
             this.setState({
                 email:this.refs.emailregister.value,

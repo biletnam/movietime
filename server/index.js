@@ -300,7 +300,7 @@ app.post('/register', (req, res) => {
     db.query(sql, data, (err, result) => {
         if(err) throw err;
         let sessionID = uuidv4()
-        let sql = `INSERT INTO session(session_id, user_id) VALUES ('${sessionID}',(select id from user where email='${req.body.email}'))`;
+        let sql = `INSERT INTO session(session_id, user_id, expired_date) VALUES ('${sessionID}',(select id from user where email='${req.body.email}'), NOW() + INTERVAL 1 DAY)`;
         db.query(sql, (err, result) => {
             if(err) throw err;
             res.send({
@@ -317,7 +317,7 @@ app.post('/login', (req, res, next) => {
     
     if (user.kode == '001') {
         // nyimpen sessionID di server
-        let sql = `INSERT INTO session(session_id, user_id) VALUES ('${user.session_id}',(select id from user where email='${user.email}'))`;
+        let sql = `INSERT INTO session(session_id, user_id, expired_date) VALUES ('${user.session_id}',(select id from user where email='${user.email}'), NOW() + INTERVAL 1 DAY)`;
         db.query(sql, (err, result) => {
             if(err) throw err;
             res.send(user)
